@@ -4,6 +4,7 @@ import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
 import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
+import Footer from './components/Footer'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/partidos" />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </AuthProvider>
   )
