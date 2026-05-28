@@ -40,6 +40,7 @@ export async function savePrediction(userId, matchId, homeScore, awayScore) {
       home_score_pred: homeScore,
       away_score_pred: awayScore,
     }, { onConflict: 'user_id,match_id' })
+    .select('user_id, match_id, home_score_pred, away_score_pred')
 }
 
 export async function getMyPredictions(userId) {
@@ -48,6 +49,13 @@ export async function getMyPredictions(userId) {
     .select('*, matches(*)')
     .eq('user_id', userId)
     .order('matches(match_time)', { ascending: true })
+}
+
+export async function getPredictions() {
+  return supabase
+    .from('predictions')
+    .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username)')
+    .order('match_id', { ascending: true })
 }
 
 // --- RANKING ---
