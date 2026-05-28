@@ -10,6 +10,7 @@ export default function Matches() {
   const [saved, setSaved] = useState({})
   const [saving, setSaving] = useState({})
   const [loadError, setLoadError] = useState('')
+  const [predictionNotice, setPredictionNotice] = useState('')
 
   useEffect(() => {
     function getMatchKey(match) {
@@ -22,13 +23,19 @@ export default function Matches() {
 
     async function loadData() {
       setLoadError('')
+      setPredictionNotice('')
       const [{ data: matchesData, error: matchesError }, { data: allPredictionsData, error: allPredictionsError }] = await Promise.all([
         getMatches(),
         getPredictions()
       ])
 
-      if (matchesError || allPredictionsError) {
-        setLoadError('No se pudieron cargar los partidos o las predicciones.')
+      if (matchesError) {
+        setLoadError('No se pudieron cargar los partidos.')
+      }
+
+      if (allPredictionsError) {
+        console.error('No se pudieron cargar las predicciones.', allPredictionsError)
+        setPredictionNotice('Las predicciones no pudieron cargarse por ahora.')
       }
 
       setMatches(matchesData || [])
@@ -111,7 +118,8 @@ export default function Matches() {
       setPredictionsByMatch(grouped)
     }
     if (error) {
-      setLoadError('No se pudo guardar la predicción. Intentá de nuevo.')
+      console.error('No se pudo guardar la predicción.', error)
+      setPredictionNotice('No se pudo guardar la predicción. Intentá de nuevo.')
     }
     setTimeout(() => setSaved(s => ({ ...s, [matchId]: false })), 2000)
   }
@@ -129,6 +137,7 @@ export default function Matches() {
 
   function getOtherPredictions(matchId) {
     return (predictionsByMatch[matchId] || []).filter(prediction => prediction.user_id !== user?.id)
+      .sort((a, b) => a.username.localeCompare(b.username))
   }
 
   return (
@@ -144,6 +153,19 @@ export default function Matches() {
           border: '0.5px solid rgba(220, 38, 38, 0.2)'
         }}>
           {loadError}
+        </div>
+      )}
+      {predictionNotice && !loadError && (
+        <div style={{
+          marginBottom: 12,
+          padding: '0.7rem 1rem',
+          borderRadius: 'var(--border-radius-md)',
+          background: 'rgba(120, 113, 108, 0.08)',
+          color: 'var(--color-text-secondary)',
+          border: '0.5px solid rgba(120, 113, 108, 0.18)',
+          fontSize: 13
+        }}>
+          {predictionNotice}
         </div>
       )}
       {matches.map(match => {

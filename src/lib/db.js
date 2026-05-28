@@ -48,14 +48,12 @@ export async function getMyPredictions(userId) {
     .from('predictions')
     .select('*, matches(*)')
     .eq('user_id', userId)
-    .order('matches(match_time)', { ascending: true })
 }
 
 export async function getPredictions() {
   return supabase
     .from('predictions')
     .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username), matches(id, match_id)')
-    .order('matches(match_time)', { ascending: true })
 }
 
 // --- RANKING ---
