@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
@@ -13,7 +13,16 @@ function PrivateRoute({ children }) {
 }
 
 function Navbar() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    const { error } = await logout()
+    if (!error) {
+      navigate('/login', { replace: true })
+    }
+  }
+
   return (
     <nav style={{
       display: 'flex', gap: 16, padding: '1rem',
@@ -23,9 +32,21 @@ function Navbar() {
       <Link to="/ranking">🏆 Ranking</Link>
       {!user
         ? <Link to="/login" style={{ marginLeft: 'auto' }}>Ingresar</Link>
-        : <Link to="/login" style={{ marginLeft: 'auto' }}>
-            {user.user_metadata?.username}
-          </Link>
+        : <button
+            type="button"
+            onClick={handleLogout}
+            style={{
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              color: 'var(--color-text-primary)',
+              textDecoration: 'underline'
+            }}
+          >
+            {`${user.user_metadata?.username ?? 'Usuario'} Cerrar sesión`}
+          </button>
       }
     </nav>
   )
