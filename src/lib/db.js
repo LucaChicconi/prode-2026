@@ -54,8 +54,8 @@ export async function getMyPredictions(userId) {
 export async function getPredictions() {
   return supabase
     .from('predictions')
-    .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username)')
-    .order('match_id', { ascending: true })
+    .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username), matches(id, match_id)')
+    .order('matches(match_time)', { ascending: true })
 }
 
 // --- RANKING ---

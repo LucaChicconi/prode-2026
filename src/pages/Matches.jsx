@@ -12,6 +12,14 @@ export default function Matches() {
   const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
+    function getMatchKey(match) {
+      return match.match_id ?? match.id
+    }
+
+    function getPredictionMatchKey(prediction) {
+      return prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
+    }
+
     async function loadData() {
       setLoadError('')
       const [{ data: matchesData, error: matchesError }, { data: allPredictionsData, error: allPredictionsError }] = await Promise.all([
@@ -27,8 +35,10 @@ export default function Matches() {
 
       const grouped = {}
       allPredictionsData?.forEach(prediction => {
-        if (!grouped[prediction.match_id]) grouped[prediction.match_id] = []
-        grouped[prediction.match_id].push({
+        const predictionMatchKey = getPredictionMatchKey(prediction)
+        if (!predictionMatchKey) return
+        if (!grouped[predictionMatchKey]) grouped[predictionMatchKey] = []
+        grouped[predictionMatchKey].push({
           user_id: prediction.user_id,
           username: prediction.profiles?.username || 'Usuario',
           home: prediction.home_score_pred,
@@ -42,7 +52,9 @@ export default function Matches() {
         const { data: myPredictionsData } = await getMyPredictions(user.id)
         const own = {}
         myPredictionsData?.forEach(prediction => {
-          own[prediction.match_id] = {
+          const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
+          if (!predictionMatchKey) return
+          own[predictionMatchKey] = {
             home: prediction.home_score_pred,
             away: prediction.away_score_pred,
           }
@@ -58,6 +70,10 @@ export default function Matches() {
     return new Date(matchTime) < new Date()
   }
 
+  function getMatchKey(match) {
+    return match.match_id ?? match.id
+  }
+
   async function handleSave(matchId) {
     const pred = myPredictions[matchId]
     if (!pred) return
@@ -71,7 +87,9 @@ export default function Matches() {
       const { data: refreshedOwn } = await getMyPredictions(user.id)
       const own = {}
       refreshedOwn?.forEach(prediction => {
-        own[prediction.match_id] = {
+        const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
+        if (!predictionMatchKey) return
+        own[predictionMatchKey] = {
           home: prediction.home_score_pred,
           away: prediction.away_score_pred,
         }
@@ -80,8 +98,10 @@ export default function Matches() {
       const { data } = await getPredictions()
       const grouped = {}
       data?.forEach(prediction => {
-        if (!grouped[prediction.match_id]) grouped[prediction.match_id] = []
-        grouped[prediction.match_id].push({
+        const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
+        if (!predictionMatchKey) return
+        if (!grouped[predictionMatchKey]) grouped[predictionMatchKey] = []
+        grouped[predictionMatchKey].push({
           user_id: prediction.user_id,
           username: prediction.profiles?.username || 'Usuario',
           home: prediction.home_score_pred,
@@ -128,10 +148,11 @@ export default function Matches() {
       )}
       {matches.map(match => {
         const started = isMatchStarted(match.match_time)
-        const myPred = getMyPrediction(match.match_id)
-        const otherPredictions = getOtherPredictions(match.match_id)
+        const matchKey = getMatchKey(match)
+        const myPred = getMyPrediction(matchKey)
+        const otherPredictions = getOtherPredictions(matchKey)
         return (
-          <div key={match.id} style={{
+          <div key={matchKey} style={{
             border: '0.5px solid var(--color-border-tertiary)',
             borderRadius: 'var(--border-radius-lg)',
             padding: '1rem',
@@ -171,22 +192,22 @@ export default function Matches() {
                   <input type="number" min="0" max="20"
                     disabled={started || !user}
                     value={myPred.home ?? 0}
-                    onChange={e => updatePred(match.match_id, 'home', e.target.value)}
+                    onChange={e => updatePred(matchKey, 'home', e.target.value)}
                     style={{ width: 56, textAlign: 'center' }}
                   />
                   <span style={{ color: 'var(--color-text-secondary)' }}>-</span>
                   <input type="number" min="0" max="20"
                     disabled={started || !user}
                     value={myPred.away ?? 0}
-                    onChange={e => updatePred(match.match_id, 'away', e.target.value)}
+                    onChange={e => updatePred(matchKey, 'away', e.target.value)}
                     style={{ width: 56, textAlign: 'center' }}
                   />
                   <button
-                    disabled={started || !user || saving[match.match_id]}
-                    onClick={() => handleSave(match.match_id)}
+                    disabled={started || !user || saving[matchKey]}
+                    onClick={() => handleSave(matchKey)}
                     style={{ minWidth: 90 }}
                   >
-                    {saved[match.match_id] ? '✓ Guardado' : saving[match.match_id] ? 'Guardando...' : 'Guardar'}
+                    {saved[matchKey] ? '✓ Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
                   </button>
                 </div>
 
@@ -195,7 +216,7 @@ export default function Matches() {
                     Predicciones de usuarios
                   </div>
                   {otherPredictions.length > 0 ? otherPredictions.map(prediction => (
-                    <div key={`${match.match_id}-${prediction.user_id}`} style={{
+                    <div key={`${matchKey}-${prediction.user_id}`} style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       gap: 12,
