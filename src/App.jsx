@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
@@ -34,7 +34,7 @@ function Navbar() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -43,7 +43,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/partidos" />} />
         </Routes>
         <Footer />
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   )
 }
