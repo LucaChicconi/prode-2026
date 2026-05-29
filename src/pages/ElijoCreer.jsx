@@ -1,3 +1,7 @@
+import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../hooks/useAuth'
+import { getElijoCreerSelection, saveElijoCreerSelection } from '../lib/db'
+
 const underdogTeams = [
   'Nueva Zelanda',
   'Haiti',
@@ -16,48 +20,134 @@ const underdogTeams = [
   'Escocia',
 ]
 
-const scoringStages = [
-  {
-    title: 'Fase de grupos',
-    points: '+2 por cada punto conseguido',
-    description: 'Cada empate o victoria del equipo elegido suma al usuario.',
-  },
-  {
-    title: 'Dieciseisavos de final',
-    points: '+5 puntos',
-    description: 'Si el equipo clasifica, el usuario recibe el bonus.',
-  },
-  {
-    title: 'Octavos de final',
-    points: '+8 puntos',
-    description: 'La campaña empieza a tomar forma en eliminación directa.',
-  },
-  {
-    title: 'Cuartos de final',
-    points: '+12 puntos',
-    tag: ':fuego: Campaña heróica!',
-    description: 'Llegar hasta acá ya es una historia grande.',
-  },
-  {
-    title: 'Semifinales',
-    points: '+17 puntos',
-    tag: 'Campaña histórica!',
-    description: 'El underdog ya está entre los cuatro mejores.',
-  },
-  {
-    title: 'Final o tercer puesto',
-    points: '+25 puntos',
-    description: 'Si llega a la definición o al partido por el tercer lugar.',
-  },
-  {
-    title: 'Campeón',
-    points: '+50 puntos extra',
-    tag: ':boom: LA ROMPIO TODA',
-    description: 'El premio máximo para la elección más valiente.',
-  },
+const advancementPhases = [
+  'Fase de grupos',
+  'Dieciseisavos de final',
+  'Octavos',
+  'Cuartos',
+  'Semis',
+  'Final',
+  'Campeón',
 ]
 
+function formatPhaseLabel(phase) {
+  if (phase === 'Semis') return 'Semis'
+  return phase
+}
+
 export default function ElijoCreer() {
+  const { user } = useAuth()
+  const [selectedTeam, setSelectedTeam] = useState('')
+  const [selectedPhase, setSelectedPhase] = useState('')
+  const [isLocked, setIsLocked] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    async function loadSelection() {
+      setSaveError('')
+
+      if (!user) {
+        setSelectedTeam('')
+        setSelectedPhase('')
+        setIsLocked(false)
+        setIsLoaded(true)
+        return
+      }
+
+      const { data, error } = await getElijoCreerSelection(user.id)
+
+      if (!active) return
+
+      if (error) {
+        setSelectedTeam('')
+        setSelectedPhase('')
+        setIsLocked(false)
+        setIsLoaded(true)
+        return
+      }
+
+      if (data?.team && data?.phase) {
+        setSelectedTeam(data.team)
+        setSelectedPhase(data.phase)
+        setIsLocked(true)
+      } else {
+        setSelectedTeam('')
+        setSelectedPhase('')
+        setIsLocked(false)
+      }
+
+      setIsLoaded(true)
+    }
+
+    loadSelection()
+
+    return () => {
+      active = false
+    }
+  }, [user])
+
+  const selectionSummary = useMemo(() => {
+    if (!selectedTeam || !selectedPhase) return ''
+
+    if (selectedPhase === 'Fase de grupos') {
+      return `Si pensas que ${selectedTeam} no pasa de fase de grupos, por qué no elegís otro equipo? xd`
+    }
+
+    if (selectedPhase === 'Dieciseisavos de final') {
+      return `Vas con ${selectedTeam}, bancás pero veo un poco de tibieza acá`
+    }
+
+    if (selectedPhase === 'Octavos') {
+      return `Ahh, ahí está, vas con ${selectedTeam} y los bancás hasta octavos, me gusta`
+    }
+
+    if (selectedPhase === 'Cuartos') {
+      return `Epa, ${selectedTeam} en cuartos de final? Le tuvo que haber ganado a un grande seguramente, me gusta`
+    }
+
+    if (selectedPhase === 'Semis') {
+      return `Mi abuelo en el mundial de la nada misma: guarda con ${selectedTeam}`
+    }
+
+    if (selectedPhase === 'Final') {
+      return `En serio ${selectedTeam} en la final? Mirá yo en ningún momento pedí que te la juegues tanto`
+    }
+
+    if (selectedPhase === 'Campeón') {
+      return `${selectedTeam} CAMPEÓN. ¿Te imaginás? Dale, confirmá. A que no te animás.`
+    }
+
+    return `${selectedTeam} · llega hasta ${selectedPhase}`
+  }, [selectedPhase, selectedTeam])
+
+  const confirmationMessage = 'Bien. Ya anoté tu decisión. Ahora hasta el final'
+
+  function handleSaveSelection() {
+    if (!user || !selectedTeam || !selectedPhase || isLocked) return
+
+    setIsSaving(true)
+    setSaveError('')
+
+    saveElijoCreerSelection(user.id, selectedTeam, selectedPhase)
+      .then(({ error }) => {
+        if (error) {
+          setSaveError('No se pudo guardar la elección. Intentá de nuevo.')
+          return
+        }
+
+        if (error === null) {
+          setIsLocked(true)
+        }
+      })
+      .finally(() => {
+        setIsSaving(false)
+      })
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.5rem 1rem 2rem' }}>
       <div style={{
@@ -72,9 +162,64 @@ export default function ElijoCreer() {
         </div>
         <h2 style={{ marginBottom: 10 }}>Elijo creer</h2>
         <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, maxWidth: 720, margin: '0 auto' }}>
-          Cada jugador elige uno de los 15 equipos de ranking FIFA más bajo para acompañarlo durante el Mundial.
-          Cuanto más lejos llegue ese equipo, más puntos suma el usuario.
+          Elegí un solo equipo de los 15 más bajos del ranking FIFA y fijá hasta qué fase creés que va a llegar.
+          La selección queda guardada de forma permanente para tu usuario. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
         </p>
+      </div>
+
+      {isLoaded && isLocked && (
+        <div style={{
+          marginBottom: 16,
+          padding: '1rem',
+          borderRadius: 'var(--border-radius-lg)',
+          border: '0.5px solid var(--color-border-tertiary)',
+          background: 'var(--color-background-primary)',
+        }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>
+            Tu elección quedó guardada
+          </div>
+          <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, marginBottom: 0 }}>
+            {confirmationMessage}
+          </p>
+        </div>
+      )}
+
+      <div style={{
+        display: 'grid',
+        gap: 12,
+        marginBottom: 20,
+        padding: '1rem',
+        borderRadius: 'var(--border-radius-lg)',
+        border: '0.5px solid var(--color-border-tertiary)',
+        background: 'var(--color-background-primary)',
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
+          Elegí tu equipo
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {underdogTeams.map(team => {
+            const isSelected = selectedTeam === team
+
+            return (
+              <button
+                key={team}
+                type="button"
+                disabled={isLocked}
+                onClick={() => setSelectedTeam(team)}
+                style={{
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '999px',
+                  border: isSelected ? '1px solid var(--color-text-primary)' : '0.5px solid var(--color-border-tertiary)',
+                  background: isSelected ? 'var(--color-background-secondary)' : 'transparent',
+                  fontWeight: isSelected ? 700 : 500,
+                  cursor: isLocked ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {team}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       <div style={{
@@ -87,61 +232,64 @@ export default function ElijoCreer() {
         background: 'var(--color-background-primary)',
       }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
-          Los 15 posibles elegidos
+          Seleccioná la fase máxima
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {underdogTeams.map(team => (
-            <span
-              key={team}
-              style={{
-                padding: '0.45rem 0.8rem',
-                borderRadius: '999px',
-                border: '0.5px solid var(--color-border-tertiary)',
-                background: 'var(--color-background-secondary)',
-                fontWeight: 500,
-              }}
-            >
-              {team}
-            </span>
-          ))}
+          {advancementPhases.map(phase => {
+            const isSelected = selectedPhase === phase
+
+            return (
+              <button
+                key={phase}
+                type="button"
+                disabled={isLocked}
+                onClick={() => setSelectedPhase(phase)}
+                style={{
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '999px',
+                  border: isSelected ? '1px solid var(--color-text-primary)' : '0.5px solid var(--color-border-tertiary)',
+                  background: isSelected ? 'var(--color-background-secondary)' : 'transparent',
+                  fontWeight: isSelected ? 700 : 500,
+                  cursor: isLocked ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {formatPhaseLabel(phase)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gap: 12 }}>
-        {scoringStages.map(stage => (
-          <div
-            key={stage.title}
-            style={{
-              padding: '1rem',
-              borderRadius: 'var(--border-radius-lg)',
-              border: '0.5px solid var(--color-border-tertiary)',
-              background: 'var(--color-background-primary)',
-              textAlign: 'left',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-              <div style={{ fontSize: 16, fontWeight: 700 }}>{stage.title}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>{stage.points}</div>
-            </div>
-            <p style={{ marginTop: 8, color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
-              {stage.description}
-            </p>
-            {stage.tag && (
-              <div style={{
-                display: 'inline-flex',
-                marginTop: 10,
-                padding: '0.35rem 0.7rem',
-                borderRadius: '999px',
-                background: 'var(--color-background-secondary)',
-                border: '0.5px solid var(--color-border-tertiary)',
-                fontSize: 13,
-                fontWeight: 700,
-              }}>
-                {stage.tag}
-              </div>
-            )}
-          </div>
-        ))}
+      <div style={{
+        display: 'grid',
+        gap: 12,
+        marginBottom: 20,
+        padding: '1rem',
+        borderRadius: 'var(--border-radius-lg)',
+        border: '0.5px solid var(--color-border-tertiary)',
+        background: 'var(--color-background-primary)',
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
+          Resumen
+        </div>
+        {saveError && (
+          <p style={{ color: 'crimson', lineHeight: 1.55, margin: 0 }}>
+            {saveError}
+          </p>
+        )}
+        <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, margin: 0 }}>
+          {selectedTeam && selectedPhase
+            ? selectionSummary
+            : 'Elegí un equipo y una fase para habilitar el guardado permanente.'}
+        </p>
+        <button
+          type="button"
+          disabled={!user || !selectedTeam || !selectedPhase || isLocked || isSaving}
+          onClick={handleSaveSelection}
+          style={{ width: 'fit-content' }}
+        >
+          {isLocked ? 'Elección guardada' : isSaving ? 'Guardando...' : 'Guardar elección'}
+        </button>
       </div>
     </div>
   )

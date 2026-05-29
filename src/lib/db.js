@@ -64,3 +64,23 @@ export async function getRanking() {
     .order('total_points', { ascending: false })
     .limit(50)
 }
+
+// --- ELIJO CREER ---
+export async function getElijoCreerSelection(userId) {
+  return supabase
+    .from('elijo_creer_selections')
+    .select('user_id, team, phase, created_at, updated_at')
+    .eq('user_id', userId)
+    .maybeSingle()
+}
+
+export async function saveElijoCreerSelection(userId, team, phase) {
+  return supabase
+    .from('elijo_creer_selections')
+    .insert({
+      user_id: userId,
+      team,
+      phase,
+    })
+    .select('user_id, team, phase, created_at, updated_at')
+}
