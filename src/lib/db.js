@@ -77,10 +77,10 @@ export async function getElijoCreerSelection(userId) {
 export async function saveElijoCreerSelection(userId, team, phase) {
   return supabase
     .from('elijo_creer_selections')
-    .insert({
+    .upsert({
       user_id: userId,
       team,
       phase,
-    })
+    }, { onConflict: 'user_id', ignoreDuplicates: true })
     .select('user_id, team, phase, created_at, updated_at')
 }

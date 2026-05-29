@@ -35,6 +35,11 @@ function formatPhaseLabel(phase) {
   return phase
 }
 
+function isMissingElijoCreerTable(error) {
+  const message = (error?.message || '').toLowerCase()
+  return error?.code === '42P01' || message.includes('elijo_creer_selections') && message.includes('does not exist')
+}
+
 export default function ElijoCreer() {
   const { user } = useAuth()
   const [selectedTeam, setSelectedTeam] = useState('')
@@ -63,6 +68,9 @@ export default function ElijoCreer() {
       if (!active) return
 
       if (error) {
+        if (isMissingElijoCreerTable(error)) {
+          setSaveError('Falta crear la tabla elijo_creer_selections en Supabase. Aplicá el SQL de supabase/elijo-creer-schema.sql.')
+        }
         setSelectedTeam('')
         setSelectedPhase('')
         setIsLocked(false)
@@ -135,7 +143,12 @@ export default function ElijoCreer() {
     saveElijoCreerSelection(user.id, selectedTeam, selectedPhase)
       .then(({ error }) => {
         if (error) {
-          setSaveError('No se pudo guardar la elección. Intentá de nuevo.')
+          if (isMissingElijoCreerTable(error)) {
+            setSaveError('Falta crear la tabla elijo_creer_selections en Supabase. Aplicá el SQL de supabase/elijo-creer-schema.sql.')
+            return
+          }
+
+          setSaveError(error.message || 'No se pudo guardar la elección. Intentá de nuevo.')
           return
         }
 
@@ -157,13 +170,11 @@ export default function ElijoCreer() {
         background: 'linear-gradient(135deg, rgba(255, 145, 77, 0.12), rgba(255, 95, 109, 0.08))',
         marginBottom: 16,
       }}>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.4, marginBottom: 8 }}>
-          NUEVA MODALIDAD
-        </div>
-        <h2 style={{ marginBottom: 10 }}>Elijo creer</h2>
+
+        <h2 style={{ marginBottom: 10 }}>ELIJO CREER</h2>
         <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, maxWidth: 720, margin: '0 auto' }}>
-          Elegí un solo equipo de los 15 más bajos del ranking FIFA y fijá hasta qué fase creés que va a llegar.
-          La selección queda guardada de forma permanente para tu usuario. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
+          Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
+          Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
         </p>
       </div>
 
