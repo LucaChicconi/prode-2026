@@ -4,6 +4,7 @@ import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
 import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
+import ElijoCreer from './pages/ElijoCreer'
 import Footer from './components/Footer'
 
 function PrivateRoute({ children }) {
@@ -30,6 +31,7 @@ function Navbar() {
     }}>
       <Link to="/partidos">⚽ Partidos</Link>
       <Link to="/ranking">🏆 Ranking</Link>
+      <Link to="/elijo-creer">🔥 Elijo creer</Link>
       {!user
         ? <Link to="/login" style={{ marginLeft: 'auto' }}>Ingresar</Link>
         : <button
@@ -61,6 +63,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/partidos" element={<PrivateRoute><Matches /></PrivateRoute>} />
           <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
+          <Route path="/elijo-creer" element={<PrivateRoute><ElijoCreer /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/partidos" />} />
         </Routes>
         <Footer />
