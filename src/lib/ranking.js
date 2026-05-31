@@ -199,14 +199,17 @@ export function calculateRankingWithBonus(
   const rankingWithBonus = rankingData
     .map(profile => {
       const profileKeys = getIdentityKeys(profile)
+      const storedPoints = Number(profile.total_points)
       const calculatedPoints = profileKeys.reduce((value, key) => value || pointsByUsername.get(key) || 0, 0)
       const batacazoBonus = profileKeys.reduce((value, key) => value || bonusByUsername.get(key) || 0, 0)
+      const basePoints = Number.isNaN(storedPoints) ? calculatedPoints : storedPoints
 
       return {
         ...profile,
+        storedPoints: basePoints,
         batacazoBonus,
         calculatedPoints,
-        displayPoints: calculatedPoints + batacazoBonus,
+        displayPoints: basePoints + batacazoBonus,
       }
     })
     .sort((a, b) => {
@@ -214,8 +217,8 @@ export function calculateRankingWithBonus(
         return b.displayPoints - a.displayPoints
       }
 
-      if (b.calculatedPoints !== a.calculatedPoints) {
-        return b.calculatedPoints - a.calculatedPoints
+      if (b.storedPoints !== a.storedPoints) {
+        return b.storedPoints - a.storedPoints
       }
 
       return a.username.localeCompare(b.username)

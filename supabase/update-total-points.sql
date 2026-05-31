@@ -32,7 +32,11 @@ with scored_predictions as (
 )
 update public.profiles pr
 set total_points = coalesce(totals.total_points, 0)
-from totals
+from (
+  select pr_all.id as user_id, totals.total_points
+  from public.profiles pr_all
+  left join totals on totals.user_id = pr_all.id
+) totals
 where pr.id = totals.user_id;
 
 commit;
