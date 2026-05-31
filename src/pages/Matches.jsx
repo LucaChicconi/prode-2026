@@ -2,6 +2,158 @@ import { useEffect, useMemo, useState } from 'react'
 import { getMatches, savePrediction, deletePrediction, getMyPredictions } from '../lib/db'
 import { useAuth } from '../hooks/useAuth'
 
+const defaultTopTenTeams = new Set([
+  'francia',
+  'españa',
+  'argentina',
+  'inglaterra',
+  'portugal',
+  'brasil',
+  'paises bajos',
+  'marruecos',
+  'belgica',
+  'alemania',
+])
+
+const defaultLowerFifaTeams = new Set([
+  'nueva zelanda',
+  'haiti',
+  'curazao',
+  'ghana',
+  'cabo verde',
+  'bosnia y herzegovina',
+  'jordania',
+  'arabia saudita',
+  'sudafrica',
+  'irak',
+  'qatar',
+  'uzbekistan',
+  'rd congo',
+  'tunez',
+  'escocia',
+])
+
+function normalizeTeamName(teamName) {
+  return String(teamName || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .trim()
+}
+
+function isTopTenTeam(teamName) {
+  return defaultTopTenTeams.has(normalizeTeamName(teamName))
+}
+
+function isLowerFifaTeam(teamName) {
+  return defaultLowerFifaTeams.has(normalizeTeamName(teamName))
+}
+
+function isPossibleBatacazo(match) {
+  return (
+    (isLowerFifaTeam(match.away_team) && isTopTenTeam(match.home_team)) ||
+    (isLowerFifaTeam(match.home_team) && isTopTenTeam(match.away_team))
+  )
+}
+
+const teamFlagCodes = {
+  argentina: 'ar',
+  australia: 'au',
+  austria: 'at',
+  francia: 'fr',
+  españa: 'es',
+  inglaterra: 'gb-eng',
+  'estados unidos': 'us',
+  'republica checa': 'cz',
+  'corea del sur': 'kr',
+  'costa de marfil': 'ci',
+  'ecuador': 'ec',
+  'iran': 'ir',
+  'japon': 'jp',
+  'mexico': 'mx',
+  'noruega': 'no',
+  portugal: 'pt',
+  brasil: 'br',
+  'paises bajos': 'nl',
+  paraguay: 'py',
+  marruecos: 'ma',
+  belgica: 'be',
+  alemania: 'de',
+  'croacia': 'hr',
+  'nueva zelanda': 'nz',
+  haiti: 'ht',
+  curazao: 'cw',
+  ghana: 'gh',
+  'cabo verde': 'cv',
+  'bosnia y herzegovina': 'ba',
+  jordania: 'jo',
+  'arabia saudita': 'sa',
+  sudafrica: 'za',
+  irak: 'iq',
+  qatar: 'qa',
+  'catar': 'qa',
+  uzbekistan: 'uz',
+  'rd congo': 'cd',
+  tunez: 'tn',
+  escocia: 'gb-sct',
+  argelia: 'dz',
+  'suiza': 'ch',
+  'suecia': 'se',
+  senegal: 'sn',
+  turquia: 'tr',
+  'uruguay': 'uy',
+  'colombia': 'co',
+  panama: 'pa',
+}
+
+function getTeamFlagCode(teamName) {
+  return teamFlagCodes[normalizeTeamName(teamName)] || ''
+}
+
+function TeamLabel({ teamName, align = 'left' }) {
+  const flagCode = getTeamFlagCode(teamName)
+
+  return (
+    <span className={`flex items-center gap-2 ${align === 'right' ? 'justify-end' : ''}`}>
+      {flagCode ? (
+        <span
+          className={`fi fi-${flagCode} inline-block rounded-sm shadow-sm`}
+          aria-hidden="true"
+        />
+      ) : null}
+      <span>{teamName}</span>
+    </span>
+  )
+}
+
+
+const groupBadgeColors = {
+  a: '#E53935',
+  b: '#FB8C00',
+  c: '#FDD835',
+  d: '#C0CA33',
+  e: '#43A047',
+  f: '#00897B',
+  g: '#00ACC1',
+  h: '#1E88E5',
+  i: '#3949AB',
+  j: '#8E24AA',
+  k: '#D81B60',
+  l: '#6D4C41',
+}
+
+function getGroupBadgeStyles(groupName) {
+  const normalizedGroup = String(groupName || '').toLowerCase().match(/grupo\s*([a-l])/)
+  const colorKey = normalizedGroup?.[1]
+  const backgroundColor = colorKey ? groupBadgeColors[colorKey] : '#64748B'
+  const isLightColor = ['#FDD835', '#C0CA33'].includes(backgroundColor)
+
+  return {
+    backgroundColor,
+    color: isLightColor ? '#0F172A' : '#FFFFFF',
+  }
+}
+
 export default function Matches() {
   const { user } = useAuth()
   const [matches, setMatches] = useState([])
@@ -178,16 +330,32 @@ export default function Matches() {
       <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
           <span>{new Date(match.match_time).toLocaleString('es-AR')}</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{match.stage}</span>
+          <div className = "flex items-center gap-2">
+          {isPossibleBatacazo(match) && (
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+              🔥 Posible batacazo
+            </span>
+          )}
+          <span
+            className="rounded-full px-3 py-1 text-xs font-medium"
+            style={getGroupBadgeStyles(match.stage)}
+          >
+            {match.stage}
+          </span>
+          </div>
         </div>
 
         <div className="grid gap-4">
           <div className="flex items-center gap-3 text-sm sm:text-base">
-            <span className="flex-1 text-right font-medium text-slate-900">{match.home_team}</span>
+            <span className="flex-1 text-right font-medium text-slate-900">
+              <TeamLabel teamName={match.home_team} align="right" />
+            </span>
             <span className="min-w-12 text-center font-semibold text-slate-900">{match.home_score ?? '—'}</span>
             <span className="text-slate-400">-</span>
             <span className="min-w-12 text-center font-semibold text-slate-900">{match.away_score ?? '—'}</span>
-            <span className="flex-1 font-medium text-slate-900">{match.away_team}</span>
+            <span className="flex-1 font-medium text-slate-900">
+              <TeamLabel teamName={match.away_team} />
+            </span>
           </div>
 
           <div className="grid gap-3 border-t border-slate-200 pt-4 justify-items-center text-center">
