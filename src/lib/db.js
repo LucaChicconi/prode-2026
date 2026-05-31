@@ -60,7 +60,7 @@ export async function getPredictions() {
 export async function getRanking() {
   return supabase
     .from('profiles')
-    .select('username, total_points')
+    .select('id, username, total_points')
     .order('total_points', { ascending: false })
     .limit(50)
 }

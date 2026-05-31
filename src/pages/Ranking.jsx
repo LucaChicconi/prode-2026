@@ -1,75 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getMatches, getPredictions, getRanking } from '../lib/db'
+import { calculateRankingWithBonus } from '../lib/ranking'
 import { useAuth } from '../hooks/useAuth'
-
-const topTenTeams = new Set([
-  'francia',
-  'españa',
-  'argentina',
-  'inglaterra',
-  'portugal',
-  'brasil',
-  'paises bajos',
-  'marruecos',
-  'belgica',
-  'alemania',
-])
-
-const lowerFifaTeams = new Set([
-  'nueva zelanda',
-  'haiti',
-  'curazao',
-  'ghana',
-  'cabo verde',
-  'bosnia y herzegovina',
-  'jordania',
-  'arabia saudita',
-  'sudafrica',
-  'irak',
-  'qatar',
-  'uzbekistan',
-  'rd congo',
-  'tunez',
-  'escocia',
-])
-
-function normalizeTeamName(team) {
-  return (team ?? '')
-    .toString()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-}
 
 function getMatchKey(match) {
   return match.match_id ?? match.id
-}
-
-function isPossibleBatacazo(match) {
-  const homeTeam = normalizeTeamName(match.home_team)
-  const awayTeam = normalizeTeamName(match.away_team)
-
-  const homeIsLow = lowerFifaTeams.has(homeTeam)
-  const awayIsLow = lowerFifaTeams.has(awayTeam)
-  const homeIsTop = topTenTeams.has(homeTeam)
-  const awayIsTop = topTenTeams.has(awayTeam)
-
-  if (!((homeIsLow && awayIsTop) || (awayIsLow && homeIsTop))) {
-    return false
-  }
-
-  const homeScore = Number(match.home_score)
-  const awayScore = Number(match.away_score)
-
-  if (Number.isNaN(homeScore) || Number.isNaN(awayScore)) {
-    return false
-  }
-
-  const lowTeamScore = homeIsLow ? homeScore : awayScore
-  const topTeamScore = homeIsLow ? awayScore : homeScore
-
-  return lowTeamScore >= topTeamScore
 }
 
 function getPredictionKey(prediction) {
@@ -97,68 +32,11 @@ export default function Ranking() {
       if (!active) return
 
       const rankingData = rankingResult.data || []
-      const matchesByKey = new Map(
-        (matchesResult.data || []).map(match => [getMatchKey(match), match])
+      const { rankingWithBonus, hoyLaVieron } = calculateRankingWithBonus(
+        rankingData,
+        matchesResult.data || [],
+        predictionsResult.data || []
       )
-
-      const bonusByUsername = new Map()
-
-      ;(predictionsResult.data || []).forEach(prediction => {
-        const matchKey = getPredictionKey(prediction)
-        const match = matchesByKey.get(matchKey)
-
-        if (!match || !isPossibleBatacazo(match)) {
-          return
-        }
-
-        const predictionHome = Number(prediction.home_score_pred)
-        const predictionAway = Number(prediction.away_score_pred)
-        const matchHome = Number(match.home_score)
-        const matchAway = Number(match.away_score)
-
-        if (
-          Number.isNaN(predictionHome) ||
-          Number.isNaN(predictionAway) ||
-          Number.isNaN(matchHome) ||
-          Number.isNaN(matchAway)
-        ) {
-          return
-        }
-
-        if (predictionHome === matchHome && predictionAway === matchAway) {
-          const username = prediction.profiles?.username
-          if (!username) return
-
-          bonusByUsername.set(username, (bonusByUsername.get(username) || 0) + 5)
-        }
-      })
-
-      const rankingWithBonus = rankingData
-        .map(profile => {
-          const batacazoBonus = bonusByUsername.get(profile.username) || 0
-          const totalPoints = Number(profile.total_points || 0)
-
-          return {
-            ...profile,
-            batacazoBonus,
-            displayPoints: totalPoints + batacazoBonus,
-          }
-        })
-        .sort((a, b) => {
-          if (b.displayPoints !== a.displayPoints) {
-            return b.displayPoints - a.displayPoints
-          }
-
-          if (b.total_points !== a.total_points) {
-            return b.total_points - a.total_points
-          }
-
-          return a.username.localeCompare(b.username)
-        })
-
-      const hoyLaVieron = rankingWithBonus
-        .filter(profile => profile.batacazoBonus > 0)
-        .map(profile => profile.username)
 
       setRanking(rankingWithBonus)
       setBatacazoUsers(hoyLaVieron)
