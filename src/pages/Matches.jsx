@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getMatches, savePrediction, getMyPredictions } from '../lib/db'
+import { getMatches, savePrediction, deletePrediction, getMyPredictions } from '../lib/db'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Matches() {
@@ -46,6 +46,7 @@ export default function Matches() {
       if (user) {
         const { data: myPredictionsData } = await getMyPredictions(user.id)
         const own = {}
+        const ownSaved = {}
         myPredictionsData?.forEach(prediction => {
           const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
           if (!predictionMatchKey) return
@@ -53,8 +54,13 @@ export default function Matches() {
             home: prediction.home_score_pred,
             away: prediction.away_score_pred,
           }
+          ownSaved[predictionMatchKey] = true
         })
         setMyPredictions(own)
+        setSaved(ownSaved)
+      } else {
+        setMyPredictions({})
+        setSaved({})
       }
     }
 
@@ -117,7 +123,7 @@ export default function Matches() {
 
   async function handleSave(matchId) {
     const pred = myPredictions[matchId]
-    if (!pred || !user) return
+    if (!pred || !user || saved[matchId]) return
 
     setSaving(s => ({ ...s, [matchId]: true }))
     const { error } = await savePrediction(user.id, matchId, pred.home, pred.away)
@@ -129,6 +135,7 @@ export default function Matches() {
     }
 
     setSaved(s => ({ ...s, [matchId]: true }))
+
     const { data: refreshedOwn } = await getMyPredictions(user.id)
     const own = {}
     refreshedOwn?.forEach(prediction => {
@@ -140,16 +147,32 @@ export default function Matches() {
       }
     })
     setMyPredictions(own)
+  }
 
-    window.setTimeout(() => {
-      setSaved(s => ({ ...s, [matchId]: false }))
-    }, 1500)
+  async function handleDelete(matchId) {
+    if (!user) return
+
+    setSaving(s => ({ ...s, [matchId]: true }))
+    const { error } = await deletePrediction(user.id, matchId)
+    setSaving(s => ({ ...s, [matchId]: false }))
+
+    if (error) {
+      setLoadError('No se pudo borrar la predicción. Intentá de nuevo.')
+      return
+    }
+
+    setSaved(s => ({ ...s, [matchId]: false }))
+    setMyPredictions(p => ({
+      ...p,
+      [matchId]: { home: 0, away: 0 },
+    }))
   }
 
   function renderMatchCard(match) {
     const started = isMatchStarted(match.match_time)
     const matchKey = getMatchKey(match)
     const myPred = getMyPrediction(matchKey)
+    const locked = started || !user || Boolean(saved[matchKey])
 
     return (
       <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -167,14 +190,14 @@ export default function Matches() {
             <span className="flex-1 font-medium text-slate-900">{match.away_team}</span>
           </div>
 
-          <div className="grid gap-3 border-t border-slate-200 pt-4">
-            <div className="text-sm font-semibold text-slate-900">Tu predicción</div>
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="grid gap-3 border-t border-slate-200 pt-4 justify-items-center text-center">
+            <div className="text-center text-sm font-semibold text-slate-900">Tu predicción</div>
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <input
                 type="number"
                 min="0"
                 max="20"
-                disabled={started || !user}
+                disabled={locked}
                 value={myPred.home ?? 0}
                 onChange={e => updatePred(matchKey, 'home', e.target.value)}
                 className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
@@ -184,19 +207,30 @@ export default function Matches() {
                 type="number"
                 min="0"
                 max="20"
-                disabled={started || !user}
+                disabled={locked}
                 value={myPred.away ?? 0}
                 onChange={e => updatePred(matchKey, 'away', e.target.value)}
                 className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
               />
               <button
-                disabled={started || !user || saving[matchKey]}
+                disabled={locked || saving[matchKey]}
                 onClick={() => handleSave(matchKey)}
-                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                className={`rounded-xl px-4 py-2 text-sm font-medium text-white transition-colors duration-300 ${
+                  saved[matchKey] ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-emerald-600'
+                } disabled:cursor-not-allowed disabled:opacity-80`}
               >
                 {saved[matchKey] ? 'Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
+            {saved[matchKey] && (
+              <button
+                type="button"
+                onClick={() => handleDelete(matchKey)}
+                className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white"
+              >
+                Cambié de opinión
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -219,9 +253,7 @@ export default function Matches() {
 
       <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
         <div className="grid gap-2">
-          <label htmlFor="group-filter" className="text-sm font-medium text-slate-700">
-            Grupo
-          </label>
+          <label htmlFor="group-filter" className="text-sm font-medium text-slate-700">Grupo</label>
           <select
             id="group-filter"
             value={selectedGroup}
@@ -230,17 +262,13 @@ export default function Matches() {
           >
             <option value="">Todos los grupos</option>
             {groupOptions.map(group => (
-              <option key={group} value={group}>
-                {group}
-              </option>
+              <option key={group} value={group}>{group}</option>
             ))}
           </select>
         </div>
 
         <div className="grid gap-2">
-          <label htmlFor="date-filter" className="text-sm font-medium text-slate-700">
-            Fecha
-          </label>
+          <label htmlFor="date-filter" className="text-sm font-medium text-slate-700">Fecha</label>
           <select
             id="date-filter"
             value={selectedDate}
@@ -249,9 +277,7 @@ export default function Matches() {
           >
             <option value="">Todas las fechas</option>
             {dateOptions.map(dateKey => (
-              <option key={dateKey} value={dateKey}>
-                {formatDateLabel(dateKey)}
-              </option>
+              <option key={dateKey} value={dateKey}>{formatDateLabel(dateKey)}</option>
             ))}
           </select>
         </div>
@@ -280,9 +306,7 @@ export default function Matches() {
               </div>
             </div>
           ))
-        ) : (
-          emptyState
-        )
+        ) : emptyState
       ) : filteredMatches.length > 0 ? (
         <div className="grid gap-4">{filteredMatches.map(renderMatchCard)}</div>
       ) : (

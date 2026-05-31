@@ -43,6 +43,14 @@ export async function savePrediction(userId, matchId, homeScore, awayScore) {
     .select('user_id, match_id, home_score_pred, away_score_pred')
 }
 
+export async function deletePrediction(userId, matchId) {
+  return supabase
+    .from('predictions')
+    .delete()
+    .eq('user_id', userId)
+    .eq('match_id', matchId)
+}
+
 export async function getMyPredictions(userId) {
   return supabase
     .from('predictions')
