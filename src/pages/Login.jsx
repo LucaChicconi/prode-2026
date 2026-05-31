@@ -28,42 +28,55 @@ export default function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: '4rem auto', padding: '0 1rem' }}>
-      <h1>⚽ Prode 2026</h1>
-      <h2>{isRegister ? 'Crear cuenta' : 'Iniciar sesión'}</h2>
+    <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-10">
+      <div className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="mb-6 space-y-2">
+          <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Prode 2026</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+            {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
+          </h1>
+          <p className="text-sm text-slate-500">Acceso simple, limpio y directo al torneo.</p>
+        </div>
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-3">
         {isRegister && (
           <input
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
             placeholder="Nombre de usuario"
             value={username}
             onChange={e => setUsername(e.target.value)}
-            required style={{ width: '100%', marginBottom: 8 }}
+            required
           />
         )}
         <input
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
           type="email" placeholder="Email"
           value={email} onChange={e => setEmail(e.target.value)}
-          required style={{ width: '100%', marginBottom: 8 }}
+          required
         />
         <input
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
           type="password" placeholder="Contraseña"
           value={password} onChange={e => setPassword(e.target.value)}
-          required style={{ width: '100%', marginBottom: 12 }}
+          required
         />
-        {error && <p style={{ color: 'red', fontSize: 13 }}>{error}</p>}
-        <button type="submit" style={{ width: '100%' }}>
+        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        <button type="submit" className="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
           {isRegister ? 'Registrarse' : 'Entrar'}
         </button>
-      </form>
+        </form>
 
-      <p style={{ fontSize: 13, marginTop: 12, textAlign: 'center' }}>
-        {isRegister ? '¿Ya tenés cuenta?' : '¿No tenés cuenta?'}{' '}
-        <button onClick={() => setIsRegister(!isRegister)}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-          {isRegister ? 'Iniciar sesión' : 'Registrarse'}
-        </button>
-      </p>
-    </div>
+        <p className="mt-4 text-center text-sm text-slate-500">
+          {isRegister ? '¿Ya tenés cuenta?' : '¿No tenés cuenta?'}{' '}
+          <button
+            type="button"
+            onClick={() => setIsRegister(!isRegister)}
+            className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+          >
+            {isRegister ? 'Iniciar sesión' : 'Registrarse'}
+          </button>
+        </p>
+      </div>
+    </section>
   )
 }

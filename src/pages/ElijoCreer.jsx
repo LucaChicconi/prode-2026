@@ -133,6 +133,10 @@ export default function ElijoCreer() {
   }, [selectedPhase, selectedTeam])
 
   const confirmationMessage = 'Bien. Ya anoté tu decisión. Ahora hasta el final'
+  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm'
+  const chipBaseClass = 'rounded-full border px-3 py-2 text-sm font-medium transition'
+  const chipInactiveClass = 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+  const chipDisabledClass = 'cursor-not-allowed opacity-60'
 
   function handleSaveSelection() {
     if (!user || !selectedTeam || !selectedPhase || isLocked) return
@@ -162,52 +166,32 @@ export default function ElijoCreer() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '1.5rem 1rem 2rem' }}>
-      <div style={{
-        padding: '1.5rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'linear-gradient(135deg, rgba(255, 145, 77, 0.12), rgba(255, 95, 109, 0.08))',
-        marginBottom: 16,
-      }}>
-
-        <h2 style={{ marginBottom: 10 }}>ELIJO CREER</h2>
-        <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, maxWidth: 720, margin: '0 auto' }}>
+    <section className="mx-auto w-full max-w-4xl space-y-4">
+      <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:p-8">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Apuesta única</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Elijo creer</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
           Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
           Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
         </p>
       </div>
 
       {isLoaded && isLocked && (
-        <div style={{
-          marginBottom: 16,
-          padding: '1rem',
-          borderRadius: 'var(--border-radius-lg)',
-          border: '0.5px solid var(--color-border-tertiary)',
-          background: 'var(--color-background-primary)',
-        }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>
+        <div className={panelClass}>
+          <div className="mb-2 text-sm font-semibold text-slate-900">
             Tu elección quedó guardada
           </div>
-          <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, marginBottom: 0 }}>
+          <p className="text-sm leading-6 text-slate-500">
             {confirmationMessage}
           </p>
         </div>
       )}
 
-      <div style={{
-        display: 'grid',
-        gap: 12,
-        marginBottom: 20,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)',
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
+      <div className={`${panelClass} space-y-3`}>
+        <div className="text-sm font-semibold text-slate-900">
           Elegí tu equipo
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div className="flex flex-wrap gap-2">
           {underdogTeams.map(team => {
             const isSelected = selectedTeam === team
 
@@ -217,14 +201,7 @@ export default function ElijoCreer() {
                 type="button"
                 disabled={isLocked}
                 onClick={() => setSelectedTeam(team)}
-                style={{
-                  padding: '0.5rem 0.85rem',
-                  borderRadius: '999px',
-                  border: isSelected ? '1px solid var(--color-text-primary)' : '0.5px solid var(--color-border-tertiary)',
-                  background: isSelected ? 'var(--color-background-secondary)' : 'transparent',
-                  fontWeight: isSelected ? 700 : 500,
-                  cursor: isLocked ? 'not-allowed' : 'pointer',
-                }}
+                className={`${chipBaseClass} ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
               >
                 {team}
               </button>
@@ -233,19 +210,11 @@ export default function ElijoCreer() {
         </div>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gap: 12,
-        marginBottom: 20,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)',
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
+      <div className={`${panelClass} space-y-3`}>
+        <div className="text-sm font-semibold text-slate-900">
           Seleccioná la fase máxima
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div className="flex flex-wrap gap-2">
           {advancementPhases.map(phase => {
             const isSelected = selectedPhase === phase
 
@@ -255,14 +224,7 @@ export default function ElijoCreer() {
                 type="button"
                 disabled={isLocked}
                 onClick={() => setSelectedPhase(phase)}
-                style={{
-                  padding: '0.5rem 0.85rem',
-                  borderRadius: '999px',
-                  border: isSelected ? '1px solid var(--color-text-primary)' : '0.5px solid var(--color-border-tertiary)',
-                  background: isSelected ? 'var(--color-background-secondary)' : 'transparent',
-                  fontWeight: isSelected ? 700 : 500,
-                  cursor: isLocked ? 'not-allowed' : 'pointer',
-                }}
+                className={`${chipBaseClass} ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
               >
                 {formatPhaseLabel(phase)}
               </button>
@@ -271,24 +233,16 @@ export default function ElijoCreer() {
         </div>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gap: 12,
-        marginBottom: 20,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)',
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>
+      <div className={`${panelClass} space-y-3`}>
+        <div className="text-sm font-semibold text-slate-900">
           Resumen
         </div>
         {saveError && (
-          <p style={{ color: 'crimson', lineHeight: 1.55, margin: 0 }}>
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm leading-6 text-red-700">
             {saveError}
           </p>
         )}
-        <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.55, margin: 0 }}>
+        <p className="text-sm leading-6 text-slate-500">
           {selectedTeam && selectedPhase
             ? selectionSummary
             : 'Elegí un equipo y una fase para habilitar el guardado permanente.'}
@@ -297,11 +251,11 @@ export default function ElijoCreer() {
           type="button"
           disabled={!user || !selectedTeam || !selectedPhase || isLocked || isSaving}
           onClick={handleSaveSelection}
-          style={{ width: 'fit-content' }}
+          className="w-fit rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           {isLocked ? 'Elección guardada' : isSaving ? 'Guardando...' : 'Guardar elección'}
         </button>
       </div>
-    </div>
+    </section>
   )
 }

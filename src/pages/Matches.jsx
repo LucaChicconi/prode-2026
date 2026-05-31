@@ -104,58 +104,46 @@ export default function Matches() {
     return new Date(matchTime) < new Date()
   }
 
-  async function handleSave(matchId) {
-    const pred = myPredictions[matchId]
-    if (!pred) return
-    setSaving(s => ({ ...s, [matchId]: true }))
-    const { error } = await savePrediction(
-      user.id, matchId, pred.home, pred.away
-    )
-    setSaving(s => ({ ...s, [matchId]: false }))
-    if (!error) {
-      setSaved(s => ({ ...s, [matchId]: true }))
-      const { data: refreshedOwn } = await getMyPredictions(user.id)
-      const own = {}
-      refreshedOwn?.forEach(prediction => {
-        const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
-        if (!predictionMatchKey) return
-        own[predictionMatchKey] = {
-          home: prediction.home_score_pred,
-          away: prediction.away_score_pred,
-        }
-      })
-      setMyPredictions(own)
-      const { data } = await getPredictions()
-      const grouped = {}
-      data?.forEach(prediction => {
-        const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
-        if (!predictionMatchKey) return
-        if (!grouped[predictionMatchKey]) grouped[predictionMatchKey] = []
-        grouped[predictionMatchKey].push({
-          user_id: prediction.user_id,
-          username: prediction.profiles?.username || 'Usuario',
-          home: prediction.home_score_pred,
-          away: prediction.away_score_pred,
-        })
-      })
-      setPredictionsByMatch(grouped)
-    }
-    if (error) {
-      console.error('No se pudo guardar la predicción.', error)
-      setPredictionNotice('No se pudo guardar la predicción. Intentá de nuevo.')
-    }
-    setTimeout(() => setSaved(s => ({ ...s, [matchId]: false })), 2000)
-  }
-
   function updatePred(matchId, team, value) {
     setMyPredictions(p => ({
       ...p,
-      [matchId]: { ...(p[matchId] || { home: 0, away: 0 }), [team]: Number(value) }
+      [matchId]: { ...(p[matchId] || { home: 0, away: 0 }), [team]: Number(value) },
     }))
   }
 
   function getMyPrediction(matchId) {
     return myPredictions[matchId] || { home: 0, away: 0 }
+  }
+
+  async function handleSave(matchId) {
+    const pred = myPredictions[matchId]
+    if (!pred || !user) return
+
+    setSaving(s => ({ ...s, [matchId]: true }))
+    const { error } = await savePrediction(user.id, matchId, pred.home, pred.away)
+    setSaving(s => ({ ...s, [matchId]: false }))
+
+    if (error) {
+      setLoadError('No se pudo guardar la predicción. Intentá de nuevo.')
+      return
+    }
+
+    setSaved(s => ({ ...s, [matchId]: true }))
+    const { data: refreshedOwn } = await getMyPredictions(user.id)
+    const own = {}
+    refreshedOwn?.forEach(prediction => {
+      const predictionMatchKey = prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
+      if (!predictionMatchKey) return
+      own[predictionMatchKey] = {
+        home: prediction.home_score_pred,
+        away: prediction.away_score_pred,
+      }
+    })
+    setMyPredictions(own)
+
+    window.setTimeout(() => {
+      setSaved(s => ({ ...s, [matchId]: false }))
+    }, 1500)
   }
 
   function renderMatchCard(match) {
@@ -164,62 +152,49 @@ export default function Matches() {
     const myPred = getMyPrediction(matchKey)
 
     return (
-      <div key={matchKey} style={{
-        border: '0.5px solid var(--color-border-tertiary)',
-        borderRadius: 'var(--border-radius-lg)',
-        padding: '1rem',
-        marginBottom: '1rem',
-        background: 'var(--color-background-primary)'
-      }}>
-        <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
-          {new Date(match.match_time).toLocaleString('es-AR')} — {match.stage}
+      <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
+          <span>{new Date(match.match_time).toLocaleString('es-AR')}</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{match.stage}</span>
         </div>
-        <div style={{ display: 'grid', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ flex: 1, textAlign: 'right', fontWeight: 500 }}>
-              {match.home_team}
-            </span>
-            <span style={{ minWidth: 56, textAlign: 'center', fontWeight: 600 }}>
-              {match.home_score ?? '—'}
-            </span>
-            <span style={{ color: 'var(--color-text-secondary)' }}>-</span>
-            <span style={{ minWidth: 56, textAlign: 'center', fontWeight: 600 }}>
-              {match.away_score ?? '—'}
-            </span>
-            <span style={{ flex: 1, fontWeight: 500 }}>
-              {match.away_team}
-            </span>
+
+        <div className="grid gap-4">
+          <div className="flex items-center gap-3 text-sm sm:text-base">
+            <span className="flex-1 text-right font-medium text-slate-900">{match.home_team}</span>
+            <span className="min-w-12 text-center font-semibold text-slate-900">{match.home_score ?? '—'}</span>
+            <span className="text-slate-400">-</span>
+            <span className="min-w-12 text-center font-semibold text-slate-900">{match.away_score ?? '—'}</span>
+            <span className="flex-1 font-medium text-slate-900">{match.away_team}</span>
           </div>
 
-          <div style={{
-            borderTop: '0.5px solid var(--color-border-tertiary)',
-            paddingTop: 12,
-            display: 'grid',
-            gap: 10,
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 600 }}>
-              Tu predicción
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <input type="number" min="0" max="20"
+          <div className="grid gap-3 border-t border-slate-200 pt-4">
+            <div className="text-sm font-semibold text-slate-900">Tu predicción</div>
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                type="number"
+                min="0"
+                max="20"
                 disabled={started || !user}
                 value={myPred.home ?? 0}
                 onChange={e => updatePred(matchKey, 'home', e.target.value)}
-                style={{ width: 56, textAlign: 'center' }}
+                className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
               />
-              <span style={{ color: 'var(--color-text-secondary)' }}>-</span>
-              <input type="number" min="0" max="20"
+              <span className="text-slate-400">-</span>
+              <input
+                type="number"
+                min="0"
+                max="20"
                 disabled={started || !user}
                 value={myPred.away ?? 0}
                 onChange={e => updatePred(matchKey, 'away', e.target.value)}
-                style={{ width: 56, textAlign: 'center' }}
+                className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
               />
               <button
                 disabled={started || !user || saving[matchKey]}
                 onClick={() => handleSave(matchKey)}
-                style={{ minWidth: 90 }}
+                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
-                {saved[matchKey] ? '✓ Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
+                {saved[matchKey] ? 'Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
           </div>
@@ -228,26 +203,30 @@ export default function Matches() {
     )
   }
 
+  const emptyState = (
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-sm text-slate-500 shadow-sm">
+      No hay partidos para los filtros seleccionados.
+    </div>
+  )
+
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: '1.5rem 1rem' }}>
-      <h2>Partidos</h2>
-      <div style={{
-        display: 'grid',
-        gap: 12,
-        marginBottom: 16,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)'
-      }}>
-        <div style={{ display: 'grid', gap: 6 }}>
-          <label htmlFor="group-filter" style={{ fontSize: 13, fontWeight: 600 }}>
+    <section className="mx-auto w-full max-w-4xl space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Calendario</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Partidos</h1>
+        <p className="text-sm text-slate-500">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
+      </div>
+
+      <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
+        <div className="grid gap-2">
+          <label htmlFor="group-filter" className="text-sm font-medium text-slate-700">
             Grupo
           </label>
           <select
             id="group-filter"
             value={selectedGroup}
             onChange={e => setSelectedGroup(e.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
           >
             <option value="">Todos los grupos</option>
             {groupOptions.map(group => (
@@ -258,14 +237,15 @@ export default function Matches() {
           </select>
         </div>
 
-        <div style={{ display: 'grid', gap: 6 }}>
-          <label htmlFor="date-filter" style={{ fontSize: 13, fontWeight: 600 }}>
+        <div className="grid gap-2">
+          <label htmlFor="date-filter" className="text-sm font-medium text-slate-700">
             Fecha
           </label>
           <select
             id="date-filter"
             value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
           >
             <option value="">Todas las fechas</option>
             {dateOptions.map(dateKey => (
@@ -276,54 +256,38 @@ export default function Matches() {
           </select>
         </div>
       </div>
+
       {loadError && (
-        <div style={{
-          marginBottom: 12,
-          padding: '0.75rem 1rem',
-          borderRadius: 'var(--border-radius-md)',
-          background: 'rgba(220, 38, 38, 0.08)',
-          color: '#b91c1c',
-          border: '0.5px solid rgba(220, 38, 38, 0.2)'
-        }}>
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {loadError}
         </div>
       )}
+
       {selectedDate ? (
-        groupedMatches.length > 0 ? groupedMatches.map(dateSection => (
-          <div key={dateSection.dateKey} style={{ marginBottom: 16 }}>
-            <div style={{
-              marginBottom: 10,
-              fontSize: 13,
-              fontWeight: 700,
-              color: 'var(--color-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em'
-            }}>
-              {formatDateLabel(dateSection.dateKey)}
-            </div>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {dateSection.groups.map(groupSection => (
-                <div key={`${dateSection.dateKey}-${groupSection.groupKey}`} style={{ display: 'grid', gap: 10 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>
-                    {groupSection.groupKey}
+        groupedMatches.length > 0 ? (
+          groupedMatches.map(dateSection => (
+            <div key={dateSection.dateKey} className="space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                {formatDateLabel(dateSection.dateKey)}
+              </div>
+              <div className="grid gap-4">
+                {dateSection.groups.map(groupSection => (
+                  <div key={`${dateSection.dateKey}-${groupSection.groupKey}`} className="grid gap-3">
+                    <div className="text-sm font-semibold text-slate-900">{groupSection.groupKey}</div>
+                    {groupSection.items.map(renderMatchCard)}
                   </div>
-                  {groupSection.items.map(renderMatchCard)}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )) : (
-          <div style={{ color: 'var(--color-text-secondary)' }}>
-            No hay partidos para los filtros seleccionados.
-          </div>
+          ))
+        ) : (
+          emptyState
         )
       ) : filteredMatches.length > 0 ? (
-        filteredMatches.map(renderMatchCard)
+        <div className="grid gap-4">{filteredMatches.map(renderMatchCard)}</div>
       ) : (
-        <div style={{ color: 'var(--color-text-secondary)' }}>
-          No hay partidos para los filtros seleccionados.
-        </div>
+        emptyState
       )}
-    </div>
+    </section>
   )
 }

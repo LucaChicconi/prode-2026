@@ -51,91 +51,63 @@ export default function Ranking() {
   }, [])
 
   const medals = ['🥇', '🥈', '🥉']
+  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm'
+  const pillClass = 'rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700'
 
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '1.5rem 1rem' }}>
-      <h2>Ranking total</h2>
+    <section className="mx-auto w-full max-w-3xl space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Tabla general</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Ranking total</h1>
+      </div>
 
-      {loading && (
-        <p style={{ color: 'var(--color-text-secondary)' }}>Cargando ranking...</p>
-      )}
+      {loading && <p className="text-sm text-slate-500">Cargando ranking...</p>}
 
-      {ranking.map((profile, i) => (
-        <div key={profile.username} style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-          padding: '0.75rem 1rem', marginBottom: 8,
-          background: 'var(--color-background-primary)',
-          border: '0.5px solid var(--color-border-tertiary)',
-          borderRadius: 'var(--border-radius-md)',
-          fontWeight: profile.username === user?.user_metadata?.username ? 500 : 400
-        }}>
-          <span style={{ width: 28, textAlign: 'center' }}>
-            {medals[i] ?? i + 1}
+      {ranking.map((profile, index) => (
+        <div
+          key={profile.username}
+          className={`flex items-center gap-3 ${panelClass} ${profile.username === user?.user_metadata?.username ? 'ring-1 ring-slate-300' : ''}`}
+        >
+          <span className="w-8 text-center text-sm font-semibold text-slate-500">
+            {medals[index] ?? index + 1}
           </span>
-          <span style={{ flex: 1 }}>{profile.username}</span>
-          <span style={{ fontWeight: 500 }}>
+          <span className={`flex-1 ${profile.username === user?.user_metadata?.username ? 'font-medium text-slate-950' : 'text-slate-700'}`}>
+            {profile.username}
+          </span>
+          <span className="text-sm font-semibold text-slate-900">
             {profile.displayPoints} pts
             {profile.batacazoBonus > 0 ? ` +${profile.batacazoBonus}` : ''}
           </span>
         </div>
       ))}
-      {!loading && ranking.length === 0 &&
-        <p style={{ color: 'var(--color-text-secondary)' }}>
-          Aún no hay puntos cargados.
-        </p>
-      }
 
-      <div style={{
-        marginTop: 20,
-        marginBottom: 16,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)',
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
-          Posible batacazo
-        </div>
-        <p style={{ margin: 0, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+      {!loading && ranking.length === 0 && (
+        <p className="text-sm text-slate-500">Aún no hay puntos cargados.</p>
+      )}
+
+      <div className={panelClass}>
+        <div className="mb-2 text-sm font-semibold text-slate-900">Posible batacazo</div>
+        <p className="text-sm leading-6 text-slate-500">
           Si uno de los 15 equipos de ranking FIFA más bajo le empata o le gana a uno del top 10,
           ese partido queda marcado como posible batacazo. Si lo acertás exacto,
           sumás 5 puntos extra y entrás en &quot;Hoy la vieron&quot;.
         </p>
       </div>
 
-      <div style={{
-        marginBottom: 20,
-        padding: '1rem',
-        borderRadius: 'var(--border-radius-lg)',
-        border: '0.5px solid var(--color-border-tertiary)',
-        background: 'var(--color-background-primary)',
-      }}>
-        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>
-          Hoy la vieron
-        </div>
+      <div className={panelClass}>
+        <div className="mb-3 text-sm font-semibold text-slate-900">Hoy la vieron</div>
         {batacazoUsers.length > 0 ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="flex flex-wrap gap-2">
             {batacazoUsers.map(username => (
-              <span
-                key={username}
-                style={{
-                  padding: '0.45rem 0.75rem',
-                  borderRadius: '999px',
-                  border: '0.5px solid var(--color-border-tertiary)',
-                  background: 'var(--color-background-secondary)',
-                  fontWeight: 500,
-                }}
-              >
+              <span key={username} className={pillClass}>
                 {username}
               </span>
             ))}
           </div>
         ) : (
-          <p style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
-            Todavía nadie acertó un batacazo.
-          </p>
+          <p className="text-sm text-slate-500">Todavía nadie acertó un batacazo.</p>
         )}
       </div>
-    </div>
+    </section>
   )
 }
