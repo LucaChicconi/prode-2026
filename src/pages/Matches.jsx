@@ -13,7 +13,7 @@ const defaultTopTenTeams = new Set([
   'marruecos',
   'belgica',
   'alemania',
-])
+].map(normalizeTeamName))
 
 const defaultLowerFifaTeams = new Set([
   'nueva zelanda',
@@ -31,7 +31,7 @@ const defaultLowerFifaTeams = new Set([
   'rd congo',
   'tunez',
   'escocia',
-])
+].map(normalizeTeamName))
 
 function normalizeTeamName(teamName) {
   return String(teamName || '')
@@ -61,7 +61,7 @@ const teamFlagCodes = {
   australia: 'au',
   austria: 'at',
   francia: 'fr',
-  españa: 'es',
+  'españa': 'es',
   inglaterra: 'gb-eng',
   'estados unidos': 'us',
   'republica checa': 'cz',
@@ -106,8 +106,13 @@ const teamFlagCodes = {
   panama: 'pa',
 }
 
+// Create a normalized-keys map so lookups work regardless of accents/casing
+const normalizedTeamFlagCodes = Object.fromEntries(
+  Object.entries(teamFlagCodes).map(([k, v]) => [normalizeTeamName(k), v])
+)
+
 function getTeamFlagCode(teamName) {
-  return teamFlagCodes[normalizeTeamName(teamName)] || ''
+  return normalizedTeamFlagCodes[normalizeTeamName(teamName)] || ''
 }
 
 function TeamLabel({ teamName, align = 'left' }) {

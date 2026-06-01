@@ -74,9 +74,13 @@ export default function Ranking() {
           <span className={`flex-1 ${profile.username === user?.user_metadata?.username ? 'font-medium text-slate-950' : 'text-slate-700'}`}>
             {profile.username}
           </span>
-          <span className="text-sm font-semibold text-slate-900">
-            {profile.displayPoints} pts
-            {profile.batacazoBonus > 0 ? ` +${profile.batacazoBonus}` : ''}
+          <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+            <span>{profile.displayPoints} pts</span>
+            {profile.batacazoBonus > 0 ? (
+              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                batacazo +{profile.batacazoBonus}
+              </span>
+            ) : null}
           </span>
         </div>
       ))}

@@ -9,7 +9,7 @@ const defaultTopTenTeams = new Set([
   'marruecos',
   'belgica',
   'alemania',
-])
+].map(normalizeTeamName))
 
 const defaultLowerFifaTeams = new Set([
   'nueva zelanda',
@@ -27,7 +27,7 @@ const defaultLowerFifaTeams = new Set([
   'rd congo',
   'tunez',
   'escocia',
-])
+].map(normalizeTeamName))
 
 function normalizeTeamName(team) {
   return (team ?? '')
@@ -202,14 +202,14 @@ export function calculateRankingWithBonus(
       const storedPoints = Number(profile.total_points)
       const calculatedPoints = profileKeys.reduce((value, key) => value || pointsByUsername.get(key) || 0, 0)
       const batacazoBonus = profileKeys.reduce((value, key) => value || bonusByUsername.get(key) || 0, 0)
-      const basePoints = Number.isNaN(storedPoints) ? calculatedPoints : storedPoints
+      const displayPoints = Number.isNaN(storedPoints) ? calculatedPoints + batacazoBonus : storedPoints
 
       return {
         ...profile,
-        storedPoints: basePoints,
+        storedPoints: displayPoints,
         batacazoBonus,
         calculatedPoints,
-        displayPoints: basePoints + batacazoBonus,
+        displayPoints,
       }
     })
     .sort((a, b) => {
