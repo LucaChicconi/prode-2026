@@ -29,6 +29,14 @@ const defaultLowerFifaTeams = new Set([
   'escocia',
 ].map(normalizeTeamName))
 
+function normalizeKey(value) {
+  if (value === null || value === undefined) {
+    return ''
+  }
+
+  return value.toString().trim()
+}
+
 function normalizeTeamName(team) {
   return (team ?? '')
     .toString()
@@ -39,11 +47,11 @@ function normalizeTeamName(team) {
 }
 
 function getMatchKey(match) {
-  return match?.match_id ?? match?.id
+  return normalizeKey(match?.match_id ?? match?.id)
 }
 
 function getPredictionKey(prediction) {
-  return prediction?.match_id ?? prediction?.matches?.id ?? prediction?.matches?.match_id
+  return normalizeKey(prediction?.match_id ?? prediction?.matches?.id ?? prediction?.matches?.match_id)
 }
 
 function getProfileKey(profile) {
@@ -84,7 +92,7 @@ function getMatchOutcome(homeScore, awayScore) {
 }
 
 function getSimulationMatchKey(match) {
-  return match?.match_id ?? match?.id
+  return normalizeKey(match?.match_id ?? match?.id)
 }
 
 function defaultGetPointsForPrediction({ prediction, match }) {
@@ -155,8 +163,20 @@ export function calculateRankingWithBonus(
     matchesData.map(match => [getMatchKey(match), match])
   )
 
+  const usernameByIdentityKey = new Map()
+  rankingData.forEach(profile => {
+    const profileKeys = getIdentityKeys(profile)
+
+    profileKeys.forEach(key => {
+      if (!usernameByIdentityKey.has(key) && profile.username) {
+        usernameByIdentityKey.set(key, profile.username)
+      }
+    })
+  })
+
   const pointsByUsername = new Map()
   const bonusByUsername = new Map()
+  const hoyLaVieronUsernames = new Set()
 
   predictionsData.forEach(prediction => {
     const matchKey = getPredictionKey(prediction)
@@ -193,6 +213,13 @@ export function calculateRankingWithBonus(
       userKeys.forEach(userKey => {
         bonusByUsername.set(userKey, (bonusByUsername.get(userKey) || 0) + 5)
       })
+
+      userKeys.forEach(userKey => {
+        const username = usernameByIdentityKey.get(userKey)
+        if (username) {
+          hoyLaVieronUsernames.add(username)
+        }
+      })
     }
   })
 
@@ -224,9 +251,7 @@ export function calculateRankingWithBonus(
       return a.username.localeCompare(b.username)
     })
 
-  const hoyLaVieron = rankingWithBonus
-    .filter(profile => profile.batacazoBonus > 0)
-    .map(profile => profile.username)
+  const hoyLaVieron = [...hoyLaVieronUsernames].sort((a, b) => a.localeCompare(b))
 
   return { rankingWithBonus, hoyLaVieron }
 }

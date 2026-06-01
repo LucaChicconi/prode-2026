@@ -61,7 +61,11 @@ export async function getMyPredictions(userId) {
 export async function getPredictions() {
   return supabase
     .from('predictions')
-    .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username), matches(id, match_id)')
+    .select('user_id, match_id, home_score_pred, away_score_pred, profiles(username), matches(id, home_team, away_team, home_score, away_score)')
+}
+
+export async function getHoyLaVieron() {
+  return supabase.rpc('get_hoy_la_vieron')
 }
 
 // --- RANKING ---

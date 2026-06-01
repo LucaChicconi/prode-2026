@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getMatches, getPredictions, getRanking } from '../lib/db'
-import { calculateRankingWithBonus } from '../lib/ranking'
+import { getHoyLaVieron, getRanking } from '../lib/db'
 import { useAuth } from '../hooks/useAuth'
-
-function getMatchKey(match) {
-  return match.match_id ?? match.id
-}
-
-function getPredictionKey(prediction) {
-  return prediction.match_id ?? prediction.matches?.id ?? prediction.matches?.match_id
-}
 
 export default function Ranking() {
   const { user } = useAuth()
@@ -23,23 +14,17 @@ export default function Ranking() {
     async function loadRanking() {
       setLoading(true)
 
-      const [rankingResult, matchesResult, predictionsResult] = await Promise.all([
+      const [rankingResult, hoyLaVieronResult] = await Promise.all([
         getRanking(),
-        getMatches(),
-        getPredictions(),
+        getHoyLaVieron(),
       ])
 
       if (!active) return
 
       const rankingData = rankingResult.data || []
-      const { rankingWithBonus, hoyLaVieron } = calculateRankingWithBonus(
-        rankingData,
-        matchesResult.data || [],
-        predictionsResult.data || []
-      )
 
-      setRanking(rankingWithBonus)
-      setBatacazoUsers(hoyLaVieron)
+      setRanking(rankingData)
+      setBatacazoUsers((hoyLaVieronResult.data || []).map(row => row.username))
       setLoading(false)
     }
 
@@ -75,10 +60,10 @@ export default function Ranking() {
             {profile.username}
           </span>
           <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <span>{profile.displayPoints} pts</span>
-            {profile.batacazoBonus > 0 ? (
+            <span>{profile.total_points} pts</span>
+            {batacazoUsers.includes(profile.username) ? (
               <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-                batacazo +{profile.batacazoBonus}
+                Batacazo!
               </span>
             ) : null}
           </span>
