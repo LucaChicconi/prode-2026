@@ -119,14 +119,14 @@ function TeamLabel({ teamName, align = 'left' }) {
   const flagCode = getTeamFlagCode(teamName)
 
   return (
-    <span className={`flex items-center gap-2 ${align === 'right' ? 'justify-end' : ''}`}>
+    <span className={`flex min-w-0 items-center gap-1.5 sm:gap-2 ${align === 'right' ? 'justify-end' : ''}`}>
       {flagCode ? (
         <span
-          className={`fi fi-${flagCode} inline-block rounded-sm shadow-sm`}
+          className={`fi fi-${flagCode} inline-block shrink-0 rounded-sm shadow-sm`}
           aria-hidden="true"
         />
       ) : null}
-      <span>{teamName}</span>
+      <span className="truncate text-xs sm:text-sm">{teamName}</span>
     </span>
   )
 }
@@ -186,6 +186,16 @@ export default function Matches() {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
+    })
+  }
+
+  function formatMatchDateTime(matchTime) {
+    return new Date(matchTime).toLocaleString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     })
   }
 
@@ -332,17 +342,17 @@ export default function Matches() {
     const locked = started || !user || Boolean(saved[matchKey])
 
     return (
-      <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
-          <span>{new Date(match.match_time).toLocaleString('es-AR')}</span>
-          <div className = "flex items-center gap-2">
+      <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="mb-3 flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+          <span className="truncate">{formatMatchDateTime(match.match_time)}</span>
+          <div className="flex flex-wrap items-center gap-2">
           {isPossibleBatacazo(match) && (
-            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-medium text-amber-800 sm:text-xs">
               🔥 Posible batacazo
             </span>
           )}
           <span
-            className="rounded-full px-3 py-1 text-xs font-medium"
+            className="rounded-full px-2.5 py-1 text-[11px] font-medium sm:text-xs"
             style={getGroupBadgeStyles(match.stage)}
           >
             {match.stage}
@@ -351,21 +361,21 @@ export default function Matches() {
         </div>
 
         <div className="grid gap-4">
-          <div className="flex items-center gap-3 text-sm sm:text-base">
-            <span className="flex-1 text-right font-medium text-slate-900">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] items-center gap-2 text-sm sm:gap-3 sm:text-base">
+            <span className="min-w-0 text-right font-medium text-slate-900">
               <TeamLabel teamName={match.home_team} align="right" />
             </span>
-            <span className="min-w-12 text-center font-semibold text-slate-900">{match.home_score ?? '—'}</span>
+            <span className="min-w-8 text-center font-semibold text-slate-900 sm:min-w-12">{match.home_score ?? '—'}</span>
             <span className="text-slate-400">-</span>
-            <span className="min-w-12 text-center font-semibold text-slate-900">{match.away_score ?? '—'}</span>
-            <span className="flex-1 font-medium text-slate-900">
+            <span className="min-w-8 text-center font-semibold text-slate-900 sm:min-w-12">{match.away_score ?? '—'}</span>
+            <span className="min-w-0 font-medium text-slate-900">
               <TeamLabel teamName={match.away_team} />
             </span>
           </div>
 
           <div className="grid gap-3 border-t border-slate-200 pt-4 justify-items-center text-center">
             <div className="text-center text-sm font-semibold text-slate-900">Tu predicción</div>
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               <input
                 type="number"
                 min="0"
@@ -373,7 +383,7 @@ export default function Matches() {
                 disabled={locked}
                 value={myPred.home ?? 0}
                 onChange={e => updatePred(matchKey, 'home', e.target.value)}
-                className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
+                className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
               />
               <span className="text-slate-400">-</span>
               <input
@@ -383,12 +393,12 @@ export default function Matches() {
                 disabled={locked}
                 value={myPred.away ?? 0}
                 onChange={e => updatePred(matchKey, 'away', e.target.value)}
-                className="w-16 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400"
+                className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
               />
               <button
                 disabled={locked || saving[matchKey]}
                 onClick={() => handleSave(matchKey)}
-                className={`rounded-xl px-4 py-2 text-sm font-medium text-white transition-colors duration-300 ${
+                className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
                   saved[matchKey] ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-emerald-600'
                 } disabled:cursor-not-allowed disabled:opacity-80`}
               >
@@ -399,7 +409,7 @@ export default function Matches() {
               <button
                 type="button"
                 onClick={() => handleDelete(matchKey)}
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white"
+                className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white sm:px-4 sm:text-sm"
               >
                 Cambié de opinión
               </button>
@@ -419,19 +429,19 @@ export default function Matches() {
   return (
     <section className="mx-auto w-full max-w-4xl space-y-4">
       <div className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Calendario</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Partidos</h1>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Calendario</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Partidos</h1>
         <p className="text-sm text-slate-500">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
       </div>
 
-      <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
-        <div className="grid gap-2">
-          <label htmlFor="group-filter" className="text-sm font-medium text-slate-700">Grupo</label>
+      <div className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:gap-4 sm:p-4">
+        <div className="grid gap-1.5 sm:gap-2">
+          <label htmlFor="group-filter" className="text-xs font-medium text-slate-700 sm:text-sm">Grupo</label>
           <select
             id="group-filter"
             value={selectedGroup}
             onChange={e => setSelectedGroup(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 sm:text-sm"
           >
             <option value="">Todos los grupos</option>
             {groupOptions.map(group => (
@@ -440,13 +450,13 @@ export default function Matches() {
           </select>
         </div>
 
-        <div className="grid gap-2">
-          <label htmlFor="date-filter" className="text-sm font-medium text-slate-700">Fecha</label>
+        <div className="grid gap-1.5 sm:gap-2">
+          <label htmlFor="date-filter" className="text-xs font-medium text-slate-700 sm:text-sm">Fecha</label>
           <select
             id="date-filter"
             value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 sm:text-sm"
           >
             <option value="">Todas las fechas</option>
             {dateOptions.map(dateKey => (

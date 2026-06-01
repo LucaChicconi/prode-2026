@@ -28,14 +28,14 @@ export default function Login() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-10">
-      <div className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-6 sm:py-10">
+      <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
         <div className="mb-6 space-y-2">
-          <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Prode Mundial 2026</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Prode Mundial 2026</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
             {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
           </h1>
-          <p className="text-sm text-slate-500">Registrate, apostá y ganá xd. Por temas legales si sos menor de 18 años es un chiste, no podés apostar. Igual no hay premio acá así que sería timbear por amor a la timba nomás.</p>
+          <p className="text-sm text-slate-500">Registrate, jugá y demostrá lo que sabés de fútbol</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">

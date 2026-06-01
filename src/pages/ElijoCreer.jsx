@@ -133,8 +133,8 @@ export default function ElijoCreer() {
   }, [selectedPhase, selectedTeam])
 
   const confirmationMessage = 'Bien. Ya anoté tu decisión. Ahora hasta el final'
-  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm'
-  const chipBaseClass = 'rounded-full border px-3 py-2 text-sm font-medium transition'
+  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4'
+  const chipBaseClass = 'max-w-full rounded-full border px-3 py-2 text-xs font-medium transition sm:text-sm'
   const chipInactiveClass = 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
   const chipDisabledClass = 'cursor-not-allowed opacity-60'
 
@@ -167,9 +167,9 @@ export default function ElijoCreer() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-4">
-      <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Apuesta única</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Elijo creer</h1>
+      <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 shadow-sm sm:p-8">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Apuesta única</p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Elijo creer</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
           Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
           Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
@@ -201,7 +201,7 @@ export default function ElijoCreer() {
                 type="button"
                 disabled={isLocked}
                 onClick={() => setSelectedTeam(team)}
-                className={`${chipBaseClass} ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
+                className={`${chipBaseClass} break-words ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
               >
                 {team}
               </button>
@@ -242,7 +242,7 @@ export default function ElijoCreer() {
             {saveError}
           </p>
         )}
-        <p className="text-sm leading-6 text-slate-500">
+        <p className="text-sm leading-6 text-slate-500 break-words">
           {selectedTeam && selectedPhase
             ? selectionSummary
             : 'Elegí un equipo y una fase para habilitar el guardado permanente.'}

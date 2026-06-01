@@ -36,14 +36,14 @@ export default function Ranking() {
   }, [])
 
   const medals = ['🥇', '🥈', '🥉']
-  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm'
-  const pillClass = 'rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700'
+  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4'
+  const pillClass = 'rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 sm:text-sm'
 
   return (
     <section className="mx-auto w-full max-w-3xl space-y-4">
       <div className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">Tabla general</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Ranking total</h1>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Tabla general</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Ranking total</h1>
       </div>
 
       {loading && <p className="text-sm text-slate-500">Cargando ranking...</p>}
@@ -51,15 +51,15 @@ export default function Ranking() {
       {ranking.map((profile, index) => (
         <div
           key={profile.username}
-          className={`flex items-center gap-3 ${panelClass} ${profile.username === user?.user_metadata?.username ? 'ring-1 ring-slate-300' : ''}`}
+          className={`flex items-center gap-2 sm:gap-3 ${panelClass} ${profile.username === user?.user_metadata?.username ? 'ring-1 ring-slate-300' : ''}`}
         >
-          <span className="w-8 text-center text-sm font-semibold text-slate-500">
+          <span className="w-7 shrink-0 text-center text-xs font-semibold text-slate-500 sm:w-8 sm:text-sm">
             {medals[index] ?? index + 1}
           </span>
-          <span className={`flex-1 ${profile.username === user?.user_metadata?.username ? 'font-medium text-slate-950' : 'text-slate-700'}`}>
+          <span className={`min-w-0 flex-1 truncate text-sm ${profile.username === user?.user_metadata?.username ? 'font-medium text-slate-950' : 'text-slate-700'}`}>
             {profile.username}
           </span>
-          <span className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+          <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold text-slate-900 sm:gap-2 sm:text-sm">
             <span>{profile.total_points} pts</span>
             {batacazoUsers.includes(profile.username) ? (
               <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
@@ -76,7 +76,7 @@ export default function Ranking() {
 
       <div className={panelClass}>
         <div className="mb-2 text-sm font-semibold text-slate-900">Posible batacazo</div>
-        <p className="text-sm leading-6 text-slate-500">
+        <p className="text-sm leading-6 text-slate-500 break-words">
           Si uno de los 15 equipos de ranking FIFA más bajo le empata o le gana a uno del top 10,
           ese partido queda marcado como posible batacazo. Si lo acertás exacto,
           sumás 5 puntos extra y entrás en &quot;Hoy la vieron&quot;.
