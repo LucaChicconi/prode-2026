@@ -77,6 +77,14 @@ export async function getRanking() {
     .limit(50)
 }
 
+export async function getMyProfile(userId) {
+  return supabase
+    .from('profiles')
+    .select('id, username, total_points')
+    .eq('id', userId)
+    .maybeSingle()
+}
+
 // --- ELIJO CREER ---
 export async function getElijoCreerSelection(userId) {
   return supabase

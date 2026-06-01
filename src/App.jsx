@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
 import ElijoCreer from './pages/ElijoCreer'
+import Profile from './pages/Profile'
 import Footer from './components/Footer'
 
 function PrivateRoute({ children }) {
@@ -22,8 +23,7 @@ function PrivateRoute({ children }) {
 }
 
 function Navbar() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const linkClassName = ({ isActive }) => [
     'rounded-full px-4 py-2 text-sm font-medium transition-colors',
@@ -31,13 +31,6 @@ function Navbar() {
       ? 'bg-slate-900 text-white shadow-sm'
       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
   ].join(' ')
-
-  async function handleLogout() {
-    const { error } = await logout()
-    if (!error) {
-      navigate('/login', { replace: true })
-    }
-  }
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
@@ -56,13 +49,9 @@ function Navbar() {
             Ingresar
           </NavLink>
         ) : (
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="ml-auto rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950"
-          >
-            {`${user.user_metadata?.username ?? 'Usuario'} · Cerrar sesión`}
-          </button>
+          <NavLink to="/perfil" className={`${linkClassName({ isActive: false })} ml-auto`}>
+            {user.user_metadata?.username ?? 'Usuario'}
+          </NavLink>
         )}
       </nav>
     </header>
@@ -81,6 +70,7 @@ export default function App() {
               <Route path="/partidos" element={<PrivateRoute><Matches /></PrivateRoute>} />
               <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
               <Route path="/elijo-creer" element={<PrivateRoute><ElijoCreer /></PrivateRoute>} />
+              <Route path="/perfil" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="*" element={<Navigate to="/partidos" />} />
             </Routes>
           </main>
