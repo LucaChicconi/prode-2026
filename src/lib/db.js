@@ -30,7 +30,9 @@ export async function getMatches() {
     .order('match_time', { ascending: true })
 }
 
-export async function toggleMatchLock(matchId, locked) {
+export async function toggleMatchLock(userId, matchId, locked) {
+  const admin = await isUserAdmin(userId)
+  if (!admin) return { error: { message: 'No autorizado' }, data: null }
   return supabase
     .from('matches')
     .update({ locked })

@@ -389,13 +389,13 @@ export default function Matches() {
   }
 
   async function handleToggleLock(matchId, currentLocked) {
-    const { error } = await toggleMatchLock(matchId, !currentLocked)
+    const { error } = await toggleMatchLock(user.id, matchId, !currentLocked)
     if (error) {
       setLoadError('No se pudo cambiar el estado del partido.')
       return
     }
     setMatches(matches.map(m =>
-      getMatchKey(m) === matchId ? { ...m, locked: !currentLocked } : m
+      m.id === matchId ? { ...m, locked: !currentLocked } : m
     ))
   }
 
@@ -471,12 +471,12 @@ export default function Matches() {
             )}
             {match.locked && (
               <span className="text-xs text-red-600 font-medium sm:text-sm">
-                Dormiste! el partido ya casi empieza
+                Es muy tarde, ya empieza el partido!
               </span>
             )}
             {isAdmin && (
               <button
-                onClick={() => handleToggleLock(matchKey, match.locked)}
+                onClick={() => handleToggleLock(match.id, match.locked)}
                 className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
                   match.locked ? 'bg-red-600' : 'bg-amber-500'
                 }`}
