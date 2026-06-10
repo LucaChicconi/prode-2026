@@ -160,12 +160,12 @@ function getGroupBadgeStyles(groupName) {
 }
 
 function ScoreInput({ value, disabled, onChange }) {
-  const [draft, setDraft] = useState(value ? String(value) : '')
+  const [draft, setDraft] = useState(value != null ? String(value) : '')
   const [editing, setEditing] = useState(false)
 
   useEffect(() => {
     if (!editing) {
-      setDraft(value ? String(value) : '')
+      setDraft(value != null ? String(value) : '')
     }
   }, [value, editing])
 
@@ -188,7 +188,7 @@ function ScoreInput({ value, disabled, onChange }) {
   function handleBlur() {
     setEditing(false)
     const num = draft === '' ? 0 : Number(draft)
-    setDraft(num ? String(num) : '')
+    setDraft(draft === '' ? '' : String(num))
     onChange(num)
   }
 
@@ -285,6 +285,10 @@ export default function Matches() {
     }
 
     loadData()
+
+    const interval = setInterval(loadData, 10000)
+
+    return () => clearInterval(interval)
   }, [user])
 
   const groupOptions = useMemo(() => {
