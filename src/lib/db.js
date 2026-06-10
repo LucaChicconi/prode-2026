@@ -98,7 +98,7 @@ export async function getRanking() {
 export async function getMyProfile(userId) {
   return supabase
     .from('profiles')
-    .select('id, username, total_points')
+    .select('id, username, total_points, elijo_creer_bonus')
     .eq('id', userId)
     .maybeSingle()
 }
