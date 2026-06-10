@@ -159,6 +159,55 @@ function getGroupBadgeStyles(groupName) {
   }
 }
 
+function ScoreInput({ value, disabled, onChange }) {
+  const [draft, setDraft] = useState(String(value ?? 0))
+  const [editing, setEditing] = useState(false)
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(String(value ?? 0))
+    }
+  }, [value, editing])
+
+  function handleFocus(e) {
+    setEditing(true)
+    e.target.select()
+  }
+
+  function handleChange(e) {
+    const raw = e.target.value
+    if (raw === '') {
+      setDraft('')
+      return
+    }
+    if (/^\d{1,2}$/.test(raw) && Number(raw) <= 20) {
+      setDraft(raw)
+    }
+  }
+
+  function handleBlur() {
+    setEditing(false)
+    const num = draft === '' ? 0 : Number(draft)
+    setDraft(String(num))
+    onChange(num)
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      maxLength={2}
+      disabled={disabled}
+      value={draft}
+      onFocus={handleFocus}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
+    />
+  )
+}
+
 export default function Matches() {
   const { user } = useAuth()
   const [matches, setMatches] = useState([])
@@ -280,7 +329,7 @@ export default function Matches() {
   function updatePred(matchId, team, value) {
     setMyPredictions(p => ({
       ...p,
-      [matchId]: { ...(p[matchId] || { home: 0, away: 0 }), [team]: Number(value) },
+      [matchId]: { ...(p[matchId] || { home: 0, away: 0 }), [team]: value },
     }))
   }
 
@@ -376,24 +425,16 @@ export default function Matches() {
           <div className="grid gap-3 border-t border-slate-200 pt-4 justify-items-center text-center">
             <div className="text-center text-sm font-semibold text-slate-900">Tu predicción</div>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-              <input
-                type="number"
-                min="0"
-                max="20"
-                disabled={locked}
+              <ScoreInput
                 value={myPred.home ?? 0}
-                onChange={e => updatePred(matchKey, 'home', e.target.value)}
-                className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
+                disabled={locked}
+                onChange={val => updatePred(matchKey, 'home', val)}
               />
               <span className="text-slate-400">-</span>
-              <input
-                type="number"
-                min="0"
-                max="20"
-                disabled={locked}
+              <ScoreInput
                 value={myPred.away ?? 0}
-                onChange={e => updatePred(matchKey, 'away', e.target.value)}
-                className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
+                disabled={locked}
+                onChange={val => updatePred(matchKey, 'away', val)}
               />
               <button
                 disabled={locked || saving[matchKey]}
