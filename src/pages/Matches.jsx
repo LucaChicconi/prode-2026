@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getMatches, savePrediction, deletePrediction, getMyPredictions } from '../lib/db'
+import { getMatches, savePrediction, deletePrediction, getMyPredictions, isUserAdmin, toggleMatchLock } from '../lib/db'
 import { useAuth } from '../hooks/useAuth'
 
 const defaultTopTenTeams = new Set([
@@ -160,12 +160,12 @@ function getGroupBadgeStyles(groupName) {
 }
 
 function ScoreInput({ value, disabled, onChange }) {
-  const [draft, setDraft] = useState(String(value ?? 0))
+  const [draft, setDraft] = useState(value ? String(value) : '')
   const [editing, setEditing] = useState(false)
 
   useEffect(() => {
     if (!editing) {
-      setDraft(String(value ?? 0))
+      setDraft(value ? String(value) : '')
     }
   }, [value, editing])
 
@@ -188,7 +188,7 @@ function ScoreInput({ value, disabled, onChange }) {
   function handleBlur() {
     setEditing(false)
     const num = draft === '' ? 0 : Number(draft)
-    setDraft(String(num))
+    setDraft(num ? String(num) : '')
     onChange(num)
   }
 
@@ -217,6 +217,7 @@ export default function Matches() {
   const [saved, setSaved] = useState({})
   const [saving, setSaving] = useState({})
   const [loadError, setLoadError] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   function getMatchKey(match) {
     return match.match_id ?? match.id
@@ -260,6 +261,8 @@ export default function Matches() {
       setMatches(matchesData || [])
 
       if (user) {
+        const admin = await isUserAdmin(user.id)
+        setIsAdmin(admin)
         const { data: myPredictionsData } = await getMyPredictions(user.id)
         const own = {}
         const ownSaved = {}
@@ -277,6 +280,7 @@ export default function Matches() {
       } else {
         setMyPredictions({})
         setSaved({})
+        setIsAdmin(false)
       }
     }
 
@@ -321,10 +325,6 @@ export default function Matches() {
       }))
       .sort((a, b) => a.dateKey.localeCompare(b.dateKey))
   }, [filteredMatches])
-
-  function isMatchStarted(matchTime) {
-    return new Date(matchTime) < new Date()
-  }
 
   function updatePred(matchId, team, value) {
     setMyPredictions(p => ({
@@ -384,11 +384,21 @@ export default function Matches() {
     }))
   }
 
+  async function handleToggleLock(matchId, currentLocked) {
+    const { error } = await toggleMatchLock(matchId, !currentLocked)
+    if (error) {
+      setLoadError('No se pudo cambiar el estado del partido.')
+      return
+    }
+    setMatches(matches.map(m =>
+      getMatchKey(m) === matchId ? { ...m, locked: !currentLocked } : m
+    ))
+  }
+
   function renderMatchCard(match) {
-    const started = isMatchStarted(match.match_time)
     const matchKey = getMatchKey(match)
     const myPred = getMyPrediction(matchKey)
-    const locked = started || !user || Boolean(saved[matchKey])
+    const locked = match.locked || !user || Boolean(saved[matchKey])
 
     return (
       <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
@@ -446,13 +456,28 @@ export default function Matches() {
                 {saved[matchKey] ? 'Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
-            {saved[matchKey] && (
+            {saved[matchKey] && !match.locked && (
               <button
                 type="button"
                 onClick={() => handleDelete(matchKey)}
                 className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white sm:px-4 sm:text-sm"
               >
                 Cambié de opinión
+              </button>
+            )}
+            {match.locked && (
+              <span className="text-xs text-red-600 font-medium sm:text-sm">
+                Dormiste! el partido ya casi empieza
+              </span>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => handleToggleLock(matchKey, match.locked)}
+                className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
+                  match.locked ? 'bg-red-600' : 'bg-amber-500'
+                }`}
+              >
+                {match.locked ? 'Desbloquear' : 'Bloquear'}
               </button>
             )}
           </div>

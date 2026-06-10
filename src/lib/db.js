@@ -30,6 +30,22 @@ export async function getMatches() {
     .order('match_time', { ascending: true })
 }
 
+export async function toggleMatchLock(matchId, locked) {
+  return supabase
+    .from('matches')
+    .update({ locked })
+    .eq('id', matchId)
+}
+
+export async function isUserAdmin(userId) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', userId)
+    .maybeSingle()
+  return data?.is_admin === true
+}
+
 // --- PREDICCIONES ---
 export async function savePrediction(userId, matchId, homeScore, awayScore) {
   return supabase
