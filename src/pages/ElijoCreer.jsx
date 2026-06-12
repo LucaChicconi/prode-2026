@@ -110,7 +110,7 @@ export default function ElijoCreer() {
     }
 
     if (selectedPhase === 'Octavos') {
-      return `Ahh, ahí está, vas con ${selectedTeam} y los bancás hasta octavos, me gusta`
+      return `Ahh, ahí está, vas con ${selectedTeam} y los bancás hasta octavos, ahí va queriendo`
     }
 
     if (selectedPhase === 'Cuartos') {
@@ -118,15 +118,15 @@ export default function ElijoCreer() {
     }
 
     if (selectedPhase === 'Semis') {
-      return `Mi abuelo en el mundial de la nada misma: guarda con ${selectedTeam}`
+      return `Mi abuelo en el mundial de la nada misma: ojo con ${selectedTeam} que son bravos`
     }
 
     if (selectedPhase === 'Final') {
-      return `En serio ${selectedTeam} en la final? Mirá yo en ningún momento pedí que te la juegues tanto`
+      return `En serio ${selectedTeam} en la final? Dale, animate.`
     }
 
     if (selectedPhase === 'Campeón') {
-      return `${selectedTeam} CAMPEÓN. ¿Te imaginás? Dale, confirmá. A que no te animás.`
+      return `${selectedTeam} CAMPEÓN. ¿Te imaginás? Dale, confirmá. Con ésto además de prácticamente ganar el prode te ganás un abrazo.`
     }
 
     return `${selectedTeam} · llega hasta ${selectedPhase}`
@@ -172,7 +172,7 @@ export default function ElijoCreer() {
         <h1 className="mt-1 text-3xl font-semibold tracking-tight text-primary-950 sm:text-4xl">Elijo creer</h1>
         <p className="mt-2 max-w-2xl text-base leading-6 text-primary-500">
           Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
-          Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
+          Tu predicción queda guardada de forma permanente.Tenés tiempo hasta el 17 para elegir. <strong>UNA VEZ GUARDES TU ELECCIÓN NO PODES ARRUGAR.</strong>
         </p>
       </div>
 
