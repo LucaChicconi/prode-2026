@@ -6,6 +6,7 @@ import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
 import ElijoCreer from './pages/ElijoCreer'
 import Profile from './pages/Profile'
+import ResetPassword from './pages/ResetPassword'
 import Footer from './components/Footer'
 import logo from './assets/idLogoAzul@2x.webp'
 
@@ -102,6 +103,7 @@ export default function App() {
           <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-2 sm:px-6 sm:py-3 lg:px-8">
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/partidos" element={<PrivateRoute><Matches /></PrivateRoute>} />
               <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
               <Route path="/elijo-creer" element={<PrivateRoute><ElijoCreer /></PrivateRoute>} />
