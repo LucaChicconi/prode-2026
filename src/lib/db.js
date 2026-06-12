@@ -17,6 +17,13 @@ export async function signOut() {
   return supabase.auth.signOut()
 }
 
+export async function resetPasswordForEmail(email) {
+  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/#/reset-password`
+  })
+}
+
 export async function getSession() {
   const { data } = await supabase.auth.getSession()
   return data.session

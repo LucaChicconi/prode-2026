@@ -110,7 +110,7 @@ export default function ElijoCreer() {
     }
 
     if (selectedPhase === 'Octavos') {
-      return `Ahh, ahí está, vas con ${selectedTeam} y los bancás hasta octavos, me gusta`
+      return `Ahh, ahí está, vas con ${selectedTeam} y los bancás hasta octavos, ahí va queriendo`
     }
 
     if (selectedPhase === 'Cuartos') {
@@ -118,23 +118,23 @@ export default function ElijoCreer() {
     }
 
     if (selectedPhase === 'Semis') {
-      return `Mi abuelo en el mundial de la nada misma: guarda con ${selectedTeam}`
+      return `Mi abuelo en el mundial de la nada misma: ojo con ${selectedTeam} que son bravos`
     }
 
     if (selectedPhase === 'Final') {
-      return `En serio ${selectedTeam} en la final? Mirá yo en ningún momento pedí que te la juegues tanto`
+      return `En serio ${selectedTeam} en la final? Dale, animate.`
     }
 
     if (selectedPhase === 'Campeón') {
-      return `${selectedTeam} CAMPEÓN. ¿Te imaginás? Dale, confirmá. A que no te animás.`
+      return `${selectedTeam} CAMPEÓN. ¿Te imaginás? Dale, confirmá. Con ésto además de prácticamente ganar el prode te ganás un abrazo.`
     }
 
     return `${selectedTeam} · llega hasta ${selectedPhase}`
   }, [selectedPhase, selectedTeam])
 
   const confirmationMessage = 'Bien. Ya anoté tu decisión. Ahora hasta el final'
-  const panelClass = 'rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:p-4'
-  const chipBaseClass = 'max-w-full rounded-full border px-3 py-2 text-xs font-medium transition sm:text-sm'
+  const panelClass = 'rounded-2xl border border-primary-200 bg-white p-2 shadow-sm sm:p-3'
+  const chipBaseClass = 'max-w-full rounded-full border px-2.5 py-1.5 text-sm font-medium transition sm:text-base'
   const chipInactiveClass = 'border-primary-200 bg-white text-primary-700 hover:border-primary-300 hover:bg-primary-50'
   const chipDisabledClass = 'cursor-not-allowed opacity-60'
 
@@ -166,32 +166,32 @@ export default function ElijoCreer() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-4xl space-y-4">
-      <div className="rounded-3xl border border-primary-200 bg-gradient-to-br from-white to-primary-50 p-4 shadow-sm sm:p-8">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-sm sm:tracking-[0.24em]">Apuesta única</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-primary-950 sm:text-3xl">Elijo creer</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-500">
+    <section className="mx-auto w-full max-w-4xl space-y-2">
+      <div className="rounded-3xl border border-primary-200 bg-gradient-to-br from-white to-primary-50 p-3 shadow-sm sm:p-5">
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-base sm:tracking-[0.24em]">Apuesta única</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-primary-950 sm:text-4xl">Elijo creer</h1>
+        <p className="mt-2 max-w-2xl text-base leading-6 text-primary-500">
           Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
-          Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
+          Tu predicción queda guardada de forma permanente.Tenés tiempo hasta el 17 para elegir. <strong>UNA VEZ GUARDES TU ELECCIÓN NO PODES ARRUGAR.</strong>
         </p>
       </div>
 
       {isLoaded && isLocked && (
         <div className={panelClass}>
-          <div className="mb-2 text-sm font-semibold text-primary-900">
+          <div className="mb-1 text-base font-semibold text-primary-900">
             Tu elección quedó guardada
           </div>
-          <p className="text-sm leading-6 text-primary-500">
+          <p className="text-base leading-6 text-primary-500">
             {confirmationMessage}
           </p>
         </div>
       )}
 
-      <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-primary-900">
+      <div className={`${panelClass} space-y-2`}>
+        <div className="text-base font-semibold text-primary-900">
           Elegí tu equipo
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {underdogTeams.map(team => {
             const isSelected = selectedTeam === team
 
@@ -210,11 +210,11 @@ export default function ElijoCreer() {
         </div>
       </div>
 
-      <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-primary-900">
+      <div className={`${panelClass} space-y-2`}>
+        <div className="text-base font-semibold text-primary-900">
           Seleccioná la fase máxima
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {advancementPhases.map(phase => {
             const isSelected = selectedPhase === phase
 
@@ -233,16 +233,16 @@ export default function ElijoCreer() {
         </div>
       </div>
 
-      <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-primary-900">
+      <div className={`${panelClass} space-y-2`}>
+        <div className="text-base font-semibold text-primary-900">
           Resumen
         </div>
         {saveError && (
-          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm leading-6 text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-base leading-6 text-red-700">
             {saveError}
           </p>
         )}
-        <p className="text-sm leading-6 text-primary-500 break-words">
+        <p className="text-base leading-6 text-primary-500 break-words">
           {selectedTeam && selectedPhase
             ? selectionSummary
             : 'Elegí un equipo y una fase para habilitar el guardado permanente.'}
@@ -251,7 +251,7 @@ export default function ElijoCreer() {
           type="button"
           disabled={!user || !selectedTeam || !selectedPhase || isLocked || isSaving}
           onClick={handleSaveSelection}
-          className="w-fit rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:bg-primary-300"
+          className="w-fit rounded-xl bg-primary-500 px-4 py-2.5 text-base font-medium text-white transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:bg-primary-300"
         >
           {isLocked ? 'Elección guardada' : isSaving ? 'Guardando...' : 'Guardar elección'}
         </button>

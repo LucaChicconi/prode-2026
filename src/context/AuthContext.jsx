@@ -10,18 +10,13 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         let isMounted = true
 
-        async function loadSession() {
-            const { data } = await supabase.auth.getSession()
-
+        supabase.auth.getSession().then(({ data }) => {
             if (!isMounted) return
-
             setUser(data.session?.user ?? null)
             setLoading(false)
-        }
+        })
 
-        loadSession()
-
-        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
             setUser(session?.user ?? null)
             setLoading(false)
         })

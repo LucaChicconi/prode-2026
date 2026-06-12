@@ -65,6 +65,7 @@ const teamFlagCodes = {
   inglaterra: 'gb-eng',
   'estados unidos': 'us',
   'republica checa': 'cz',
+  'repupblica checa': 'cz',
   'corea del sur': 'kr',
   'costa de marfil': 'ci',
   'ecuador': 'ec',
@@ -104,6 +105,8 @@ const teamFlagCodes = {
   'uruguay': 'uy',
   'colombia': 'co',
   panama: 'pa',
+  canada: 'ca',
+  egipto: 'eg',
 }
 
 // Create a normalized-keys map so lookups work regardless of accents/casing
@@ -126,7 +129,7 @@ function TeamLabel({ teamName, align = 'left' }) {
           aria-hidden="true"
         />
       ) : null}
-      <span className="truncate text-xs sm:text-sm">{teamName}</span>
+      <span className="truncate text-sm sm:text-base">{teamName}</span>
     </span>
   )
 }
@@ -203,7 +206,7 @@ function ScoreInput({ value, disabled, onChange }) {
       onFocus={handleFocus}
       onChange={handleChange}
       onBlur={handleBlur}
-      className="w-14 rounded-xl border border-primary-200 bg-white px-2 py-2 text-center text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 disabled:bg-primary-50 disabled:text-primary-400 sm:w-16 sm:text-sm"
+      className="w-14 rounded-xl border border-primary-200 bg-white px-2 py-2 text-center text-sm text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 disabled:bg-primary-50 disabled:text-primary-400 sm:w-16 sm:text-base"
     />
   )
 }
@@ -228,11 +231,17 @@ export default function Matches() {
   }
 
   function getMatchDateKey(matchTime) {
-    return new Date(matchTime).toISOString().slice(0, 10)
+    const d = new Date(matchTime)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   function formatDateLabel(dateKey) {
-    return new Date(`${dateKey}T00:00:00Z`).toLocaleDateString('es-AR', {
+    const [year, month, day] = dateKey.split('-')
+    const d = new Date(Number(year), Number(month) - 1, Number(day))
+    return d.toLocaleDateString('es-AR', {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
@@ -406,17 +415,17 @@ export default function Matches() {
     const locked = match.locked || !user || Boolean(saved[matchKey])
 
     return (
-      <div key={matchKey} className="rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:p-4">
-        <div className="mb-3 flex flex-col gap-2 text-xs text-primary-500 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+      <div key={matchKey} className="rounded-2xl border border-primary-200 bg-white p-2 shadow-sm sm:p-3">
+        <div className="mb-1.5 flex flex-col gap-1 text-sm text-primary-500 sm:flex-row sm:items-center sm:justify-between sm:text-base">
           <span className="truncate">{formatMatchDateTime(match.match_time)}</span>
           <div className="flex flex-wrap items-center gap-2">
           {isPossibleBatacazo(match) && (
-            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-medium text-amber-800 sm:text-xs">
+            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 sm:text-sm">
               🔥 Posible batacazo
             </span>
           )}
           <span
-            className="rounded-full px-2.5 py-1 text-[11px] font-medium sm:text-xs"
+            className="rounded-full px-2.5 py-1 text-xs font-medium sm:text-sm"
             style={getGroupBadgeStyles(match.stage)}
           >
             {match.stage}
@@ -424,8 +433,8 @@ export default function Matches() {
           </div>
         </div>
 
-        <div className="grid gap-4">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] items-center gap-2 text-sm sm:gap-3 sm:text-base">
+        <div className="grid gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] items-center gap-2 text-base sm:gap-3 sm:text-lg">
             <span className="min-w-0 text-right font-medium text-primary-900">
               <TeamLabel teamName={match.home_team} align="right" />
             </span>
@@ -437,9 +446,9 @@ export default function Matches() {
             </span>
           </div>
 
-          <div className="grid gap-3 border-t border-primary-200 pt-4 justify-items-center text-center">
-            <div className="text-center text-sm font-semibold text-primary-900">Tu predicción</div>
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <div className="grid gap-1.5 border-t border-primary-200 pt-2 justify-items-center text-center">
+            <div className="text-center text-base font-semibold text-primary-900">Tu predicción</div>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
               <ScoreInput
                 value={myPred.home ?? 0}
                 disabled={locked}
@@ -454,7 +463,7 @@ export default function Matches() {
               <button
                 disabled={locked || saving[matchKey]}
                 onClick={() => handleSave(matchKey)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
+                className={`rounded-xl px-3 py-2 text-sm font-medium text-white transition-colors duration-300 sm:px-4 sm:text-base ${
                   saved[matchKey] ? 'bg-emerald-600' : 'bg-primary-500 hover:bg-emerald-600'
                 } disabled:cursor-not-allowed disabled:opacity-80`}
               >
@@ -465,20 +474,20 @@ export default function Matches() {
               <button
                 type="button"
                 onClick={() => handleDelete(matchKey)}
-                className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white sm:px-4 sm:text-sm"
+                className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition-colors duration-300 hover:bg-red-600 hover:text-white sm:px-4 sm:text-base"
               >
                 Cambié de opinión
               </button>
             )}
             {match.locked && (
-              <span className="text-xs text-red-600 font-medium sm:text-sm">
+              <span className="text-sm text-red-600 font-medium sm:text-base">
                 Es muy tarde, ya empezó el partido!
               </span>
             )}
             {isAdmin && (
               <button
                 onClick={() => handleToggleLock(match.id, match.locked)}
-                className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
+                className={`rounded-xl px-3 py-2 text-sm font-medium text-white transition-colors duration-300 sm:px-4 sm:text-base ${
                   match.locked ? 'bg-red-600' : 'bg-amber-500'
                 }`}
               >
@@ -492,27 +501,27 @@ export default function Matches() {
   }
 
   const emptyState = (
-    <div className="rounded-2xl border border-dashed border-primary-300 bg-white px-4 py-10 text-center text-sm text-primary-500 shadow-sm">
+    <div className="rounded-2xl border border-dashed border-primary-300 bg-white px-4 py-10 text-center text-base text-primary-500 shadow-sm">
       No hay partidos para los filtros seleccionados.
     </div>
   )
 
   return (
-    <section className="mx-auto w-full max-w-4xl space-y-4">
-      <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-200 sm:text-sm sm:tracking-[0.24em]">Calendario</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Partidos</h1>
-        <p className="text-sm text-primary-200">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
+    <section className="mx-auto w-full max-w-4xl space-y-2">
+      <div className="space-y-1">
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-200 sm:text-base sm:tracking-[0.24em]">Calendario</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Partidos</h1>
+        <p className="text-base text-primary-200">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:gap-4 sm:p-4">
-        <div className="grid gap-1.5 sm:gap-2">
-          <label htmlFor="group-filter" className="text-xs font-medium text-primary-700 sm:text-sm">Grupo</label>
+      <div className="grid gap-2 rounded-2xl border border-primary-200 bg-white p-2 shadow-sm sm:grid-cols-2 sm:gap-3 sm:p-3">
+        <div className="grid gap-1 sm:gap-1.5">
+          <label htmlFor="group-filter" className="text-sm font-medium text-primary-700 sm:text-base">Grupo</label>
           <select
             id="group-filter"
             value={selectedGroup}
             onChange={e => setSelectedGroup(e.target.value)}
-            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-sm"
+            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-sm text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-base"
           >
             <option value="">Todos los grupos</option>
             {groupOptions.map(group => (
@@ -522,12 +531,12 @@ export default function Matches() {
         </div>
 
         <div className="grid gap-1.5 sm:gap-2">
-          <label htmlFor="date-filter" className="text-xs font-medium text-primary-700 sm:text-sm">Fecha</label>
+          <label htmlFor="date-filter" className="text-sm font-medium text-primary-700 sm:text-base">Fecha</label>
           <select
             id="date-filter"
             value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)}
-            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-sm"
+            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-sm text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-base"
           >
             <option value="">Todas las fechas</option>
             {dateOptions.map(dateKey => (
@@ -538,7 +547,7 @@ export default function Matches() {
       </div>
 
       {loadError && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-base text-red-700">
           {loadError}
         </div>
       )}
@@ -546,14 +555,14 @@ export default function Matches() {
       {selectedDate ? (
         groupedMatches.length > 0 ? (
           groupedMatches.map(dateSection => (
-            <div key={dateSection.dateKey} className="space-y-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-200">
+            <div key={dateSection.dateKey} className="space-y-2">
+              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-200">
                 {formatDateLabel(dateSection.dateKey)}
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 {dateSection.groups.map(groupSection => (
-                  <div key={`${dateSection.dateKey}-${groupSection.groupKey}`} className="grid gap-3">
-                    <div className="text-sm font-semibold text-white">{groupSection.groupKey}</div>
+                  <div key={`${dateSection.dateKey}-${groupSection.groupKey}`} className="grid gap-2">
+                    <div className="text-base font-semibold text-white">{groupSection.groupKey}</div>
                     {groupSection.items.map(renderMatchCard)}
                   </div>
                 ))}
@@ -562,7 +571,7 @@ export default function Matches() {
           ))
         ) : emptyState
       ) : filteredMatches.length > 0 ? (
-        <div className="grid gap-4">{filteredMatches.map(renderMatchCard)}</div>
+        <div className="grid gap-3">{filteredMatches.map(renderMatchCard)}</div>
       ) : (
         emptyState
       )}

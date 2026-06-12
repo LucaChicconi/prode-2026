@@ -65,62 +65,62 @@ export default function Profile() {
   const elijoCreerBonus = profile?.elijo_creer_bonus ?? 0
   const selectedTeam = selection?.team
   const selectedPhase = selection?.phase
-  const panelClass = 'rounded-3xl border border-primary-200 bg-white p-4 shadow-sm sm:p-8'
+  const panelClass = 'rounded-3xl border border-primary-200 bg-white p-3 shadow-sm sm:p-5'
 
   return (
-    <section className="mx-auto w-full max-w-3xl space-y-4">
-      <div className="rounded-3xl border border-primary-200 bg-gradient-to-br from-white to-primary-50 p-4 shadow-sm sm:p-8">
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-primary-950 sm:text-3xl">Tu perfil</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-500">
+    <section className="mx-auto w-full max-w-3xl space-y-2">
+      <div className="rounded-3xl border border-primary-200 bg-gradient-to-br from-white to-primary-50 p-3 shadow-sm sm:p-5">
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-primary-950 sm:text-4xl">Tu perfil</h1>
+        <p className="mt-2 max-w-2xl text-base leading-6 text-primary-500">
           Acá ves tus puntos acumulados y la apuesta que dejaste en Elijo creer.
         </p>
       </div>
 
       {loading ? (
-        <p className="text-sm text-primary-200">Cargando perfil...</p>
+        <p className="text-base text-primary-200">Cargando perfil...</p>
       ) : null}
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-base leading-6 text-red-700">
           {error}
         </div>
       ) : null}
 
       {!loading ? (
         <div className={panelClass}>
-          <div className="text-sm font-medium uppercase tracking-[0.2em] text-primary-500">Tu nombre</div>
-          <div className="mt-2 break-words text-2xl font-semibold tracking-tight text-primary-950">{displayName}</div>
+          <div className="text-base font-medium uppercase tracking-[0.2em] text-primary-500">Tu nombre</div>
+          <div className="mt-1 break-words text-3xl font-semibold tracking-tight text-primary-950">{displayName}</div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-primary-50 p-3 sm:p-4">
-              <div className="text-sm font-medium text-primary-500">Puntos</div>
-              <div className="mt-2 text-3xl font-semibold tracking-tight text-primary-950">{totalPoints}</div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="rounded-2xl bg-primary-50 p-2 sm:p-3">
+              <div className="text-base font-medium text-primary-500">Puntos</div>
+              <div className="mt-1 text-4xl font-semibold tracking-tight text-primary-950">{totalPoints}</div>
             </div>
 
-            <div className="rounded-2xl bg-primary-50 p-3 sm:p-4">
-              <div className="text-sm font-medium text-primary-500">Elijo creer</div>
-              <div className="mt-2 break-words text-base font-medium text-primary-950">
+            <div className="rounded-2xl bg-primary-50 p-2 sm:p-3">
+              <div className="text-base font-medium text-primary-500">Elijo creer</div>
+              <div className="mt-1 break-words text-lg font-medium text-primary-950">
                 {selectedTeam ? selectedTeam : 'No elegiste un equipo todavía'}
               </div>
               {selectedPhase ? (
-                <div className="mt-1 break-words text-sm text-primary-500">
+                <div className="mt-1 break-words text-base text-primary-500">
                   {`Llega hasta ${selectedPhase}`}
                 </div>
               ) : null}
               {elijoCreerBonus > 0 ? (
-                <div className="mt-1 text-sm font-medium text-emerald-600">
+                <div className="mt-1 text-base font-medium text-emerald-600">
                   {`+${elijoCreerBonus} pts bonus`}
                 </div>
               ) : null}
             </div>
           </div>
 
-          <div className="mt-6 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="rounded-xl border border-primary-200 bg-primary-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl border border-primary-200 bg-primary-500 px-4 py-2.5 text-base font-medium text-white transition-colors hover:bg-red-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
             </button>
