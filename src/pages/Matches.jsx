@@ -471,7 +471,7 @@ export default function Matches() {
             )}
             {match.locked && (
               <span className="text-xs text-red-600 font-medium sm:text-sm">
-                Es muy tarde, ya empieza el partido!
+                Es muy tarde, ya empezó el partido!
               </span>
             )}
             {isAdmin && (
