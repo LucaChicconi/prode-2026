@@ -7,6 +7,7 @@ import Ranking from './pages/Ranking'
 import ElijoCreer from './pages/ElijoCreer'
 import Profile from './pages/Profile'
 import Footer from './components/Footer'
+import logo from './assets/idLogoAzul@2x.webp'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -47,7 +48,7 @@ function Navbar() {
               </NavLink>
             )}
           </div>
-          <img src="src/assets/idLogoAzul@2x.webp" alt="Logo" className="h-8 w-auto" />
+          <img src={logo} alt="Logo" className="h-8 w-auto" />
         </div>
         <div className="flex items-center justify-center gap-1 sm:gap-1.5">
           <NavLink to="/partidos" className={linkClassName}>
@@ -85,7 +86,7 @@ function Navbar() {
         </div>
 
         <div id="logo" className="ml-auto shrink-0">
-          <img src="src/assets/idLogoAzul@2x.webp" alt="Logo" className="h-10 w-auto" />
+          <img src={logo} alt="Logo" className="h-10 w-auto" />
         </div>
       </nav>
     </header>
