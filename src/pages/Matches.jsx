@@ -65,6 +65,7 @@ const teamFlagCodes = {
   inglaterra: 'gb-eng',
   'estados unidos': 'us',
   'republica checa': 'cz',
+  'repupblica checa': 'cz',
   'corea del sur': 'kr',
   'costa de marfil': 'ci',
   'ecuador': 'ec',
@@ -104,6 +105,8 @@ const teamFlagCodes = {
   'uruguay': 'uy',
   'colombia': 'co',
   panama: 'pa',
+  canada: 'ca',
+  egipto: 'eg',
 }
 
 // Create a normalized-keys map so lookups work regardless of accents/casing
@@ -228,11 +231,17 @@ export default function Matches() {
   }
 
   function getMatchDateKey(matchTime) {
-    return new Date(matchTime).toISOString().slice(0, 10)
+    const d = new Date(matchTime)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   }
 
   function formatDateLabel(dateKey) {
-    return new Date(`${dateKey}T00:00:00Z`).toLocaleDateString('es-AR', {
+    const [year, month, day] = dateKey.split('-')
+    const d = new Date(Number(year), Number(month) - 1, Number(day))
+    return d.toLocaleDateString('es-AR', {
       day: '2-digit',
       month: 'long',
       year: 'numeric',
