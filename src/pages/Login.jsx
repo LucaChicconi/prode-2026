@@ -21,27 +21,27 @@ export default function Login() {
     if (error) return setError(error.message)
 
     if (isRegister) {
-      setError('Revisá tu email para confirmar la cuenta.')
+      setError('Revisá tu email para confirmar la cuenta. Fijate en spam!')
     } else {
       navigate('/partidos')
     }
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-6 sm:py-10">
-      <div className="w-full rounded-2xl border border-primary-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-8">
-        <div className="mb-6 space-y-2">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-sm sm:tracking-[0.24em]">Prode Mundial 2026</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-primary-950 sm:text-3xl">
+    <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-3 sm:py-6">
+      <div className="w-full rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
+        <div className="mb-4 space-y-1">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-base sm:tracking-[0.24em]">Prode Mundial 2026</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-primary-950 sm:text-4xl">
             {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
           </h1>
-          <p className="text-sm text-primary-500">Registrate, jugá y demostrá lo que sabés de fútbol</p>
+          <p className="text-base text-primary-500">Registrate, jugá y demostrá lo que sabés de fútbol</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-2">
         {isRegister && (
           <input
-            className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-sm text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
+            className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-base text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
             placeholder="Nombre de usuario"
             value={username}
             onChange={e => setUsername(e.target.value)}
@@ -49,24 +49,24 @@ export default function Login() {
           />
         )}
         <input
-          className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-sm text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
+          className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-base text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
           type="email" placeholder="Email"
           value={email} onChange={e => setEmail(e.target.value)}
           required
         />
         <input
-          className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-sm text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
+          className="w-full rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-base text-primary-900 outline-none transition placeholder:text-primary-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-100"
           type="password" placeholder="Contraseña"
           value={password} onChange={e => setPassword(e.target.value)}
           required
         />
-        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-        <button type="submit" className="w-full rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-600">
+        {error && <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-base text-red-700">{error}</p>}
+        <button type="submit" className="w-full rounded-xl bg-primary-500 px-4 py-2.5 text-base font-medium text-white transition hover:bg-primary-600">
           {isRegister ? 'Registrarse' : 'Entrar'}
         </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-primary-500">
+        <p className="mt-3 text-center text-base text-primary-500">
           {isRegister ? '¿Ya tenés cuenta?' : '¿No tenés cuenta?'}{' '}
           <button
             type="button"
