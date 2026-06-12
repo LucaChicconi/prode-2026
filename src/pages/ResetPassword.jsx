@@ -1,16 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { useAuth } from '../hooks/useAuth'
 
 export default function ResetPassword() {
-  const { user, loading: authLoading } = useAuth()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [ready, setReady] = useState(false)
+  const [sessionError, setSessionError] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    async function handleRecovery() {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (session) {
+        setReady(true)
+        return
+      }
+
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const accessToken = hashParams.get('access_token')
+      const refreshToken = hashParams.get('refresh_token')
+
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+        if (!error) {
+          setReady(true)
+          return
+        }
+      }
+
+      setSessionError(true)
+    }
+
+    handleRecovery()
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -32,17 +62,7 @@ export default function ResetPassword() {
     setSuccess(true)
   }
 
-  if (authLoading) {
-    return (
-      <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-3 sm:py-6">
-        <div className="w-full rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
-          <p className="text-center text-base text-primary-500">Verificando enlace...</p>
-        </div>
-      </section>
-    )
-  }
-
-  if (!user) {
+  if (sessionError) {
     return (
       <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-3 sm:py-6">
         <div className="w-full rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
@@ -59,6 +79,16 @@ export default function ResetPassword() {
           >
             Ir a iniciar sesión
           </button>
+        </div>
+      </section>
+    )
+  }
+
+  if (!ready) {
+    return (
+      <section className="mx-auto flex w-full max-w-md flex-1 items-center justify-center py-3 sm:py-6">
+        <div className="w-full rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
+          <p className="text-center text-base text-primary-500">Verificando enlace...</p>
         </div>
       </section>
     )
