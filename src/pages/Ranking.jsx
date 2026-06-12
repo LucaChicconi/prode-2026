@@ -24,7 +24,13 @@ export default function Ranking() {
       const rankingData = rankingResult.data || []
 
       setRanking(rankingData)
-      setBatacazoUsers((hoyLaVieronResult.data || []).map(row => row.username))
+
+      if (hoyLaVieronResult.error) {
+        console.error('Error loading hoy la vieron:', hoyLaVieronResult.error)
+        setBatacazoUsers([])
+      } else {
+        setBatacazoUsers((hoyLaVieronResult.data || []).map(row => row.username))
+      }
       setLoading(false)
     }
 

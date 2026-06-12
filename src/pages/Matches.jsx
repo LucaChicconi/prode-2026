@@ -350,6 +350,7 @@ export default function Matches() {
     setSaving(s => ({ ...s, [matchId]: false }))
 
     if (error) {
+      console.error('Supabase prediction save error:', error)
       setLoadError('No se pudo guardar la predicción. Intentá de nuevo.')
       return
     }
