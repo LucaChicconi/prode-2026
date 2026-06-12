@@ -2,12 +2,45 @@
 @import 'flag-icons/css/flag-icons.min.css';
 @import 'tailwindcss';
 
+@theme {
+  --color-slate-50: #eef4f7;
+  --color-slate-100: #d0dfe8;
+  --color-slate-200: #b2cad9;
+  --color-slate-300: #94b5ca;
+  --color-slate-400: #76a0bb;
+  --color-slate-500: #4d7f99;
+  --color-slate-600: #3a6580;
+  --color-slate-700: #284c66;
+  --color-slate-800: #16334d;
+  --color-slate-900: #023A55;
+  --color-slate-950: #011a27;
+
+  --color-primary-50: #eef4f7;
+  --color-primary-100: #d0dfe8;
+  --color-primary-200: #b2cad9;
+  --color-primary-300: #94b5ca;
+  --color-primary-400: #76a0bb;
+  --color-primary-500: #023A55;
+  --color-primary-600: #02324b;
+  --color-primary-700: #022a41;
+  --color-primary-800: #022231;
+  --color-primary-900: #011a27;
+  --color-primary-950: #01121d;
+
+  --color-secondary: #3AAA35;
+  --color-secondary-light: #e8f5e8;
+  --color-violet: #6752C1;
+  --color-orange: #EA5B0C;
+  --color-shadow-dark: #022231;
+  --color-shadow-gray: #4D4D4D;
+}
+
 :root {
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #64748b;
-  --color-border-tertiary: #e2e8f0;
+  --color-text-primary: #023A55;
+  --color-text-secondary: #4d7f99;
+  --color-border-tertiary: #b2cad9;
   --color-background-primary: #ffffff;
-  --color-background-secondary: #f8fafc;
+  --color-background-secondary: #eef4f7;
   --border-radius-md: 0.75rem;
   --border-radius-lg: 1rem;
 }
@@ -18,7 +51,7 @@
   }
 
   body {
-    @apply min-h-screen bg-slate-50 text-slate-900 antialiased;
+    @apply min-h-screen bg-primary-500 text-white antialiased;
     margin: 0;
     font-family: 'Amsi Pro', 'Montserrat', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
@@ -32,7 +65,7 @@
   h1,
   h2,
   h3 {
-    @apply text-slate-950;
+    @apply text-white;
     font-family: inherit;
   }
 

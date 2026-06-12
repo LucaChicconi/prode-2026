@@ -203,7 +203,7 @@ function ScoreInput({ value, disabled, onChange }) {
       onFocus={handleFocus}
       onChange={handleChange}
       onBlur={handleBlur}
-      className="w-14 rounded-xl border border-slate-200 bg-white px-2 py-2 text-center text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 disabled:bg-slate-50 disabled:text-slate-400 sm:w-16 sm:text-sm"
+      className="w-14 rounded-xl border border-primary-200 bg-white px-2 py-2 text-center text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 disabled:bg-primary-50 disabled:text-primary-400 sm:w-16 sm:text-sm"
     />
   )
 }
@@ -405,8 +405,8 @@ export default function Matches() {
     const locked = match.locked || !user || Boolean(saved[matchKey])
 
     return (
-      <div key={matchKey} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-        <div className="mb-3 flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+      <div key={matchKey} className="rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="mb-3 flex flex-col gap-2 text-xs text-primary-500 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
           <span className="truncate">{formatMatchDateTime(match.match_time)}</span>
           <div className="flex flex-wrap items-center gap-2">
           {isPossibleBatacazo(match) && (
@@ -425,26 +425,26 @@ export default function Matches() {
 
         <div className="grid gap-4">
           <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] items-center gap-2 text-sm sm:gap-3 sm:text-base">
-            <span className="min-w-0 text-right font-medium text-slate-900">
+            <span className="min-w-0 text-right font-medium text-primary-900">
               <TeamLabel teamName={match.home_team} align="right" />
             </span>
-            <span className="min-w-8 text-center font-semibold text-slate-900 sm:min-w-12">{match.home_score ?? '—'}</span>
-            <span className="text-slate-400">-</span>
-            <span className="min-w-8 text-center font-semibold text-slate-900 sm:min-w-12">{match.away_score ?? '—'}</span>
-            <span className="min-w-0 font-medium text-slate-900">
+            <span className="min-w-8 text-center font-semibold text-primary-900 sm:min-w-12">{match.home_score ?? '—'}</span>
+            <span className="text-primary-400">-</span>
+            <span className="min-w-8 text-center font-semibold text-primary-900 sm:min-w-12">{match.away_score ?? '—'}</span>
+            <span className="min-w-0 font-medium text-primary-900">
               <TeamLabel teamName={match.away_team} />
             </span>
           </div>
 
-          <div className="grid gap-3 border-t border-slate-200 pt-4 justify-items-center text-center">
-            <div className="text-center text-sm font-semibold text-slate-900">Tu predicción</div>
+          <div className="grid gap-3 border-t border-primary-200 pt-4 justify-items-center text-center">
+            <div className="text-center text-sm font-semibold text-primary-900">Tu predicción</div>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               <ScoreInput
                 value={myPred.home ?? 0}
                 disabled={locked}
                 onChange={val => updatePred(matchKey, 'home', val)}
               />
-              <span className="text-slate-400">-</span>
+              <span className="text-primary-400">-</span>
               <ScoreInput
                 value={myPred.away ?? 0}
                 disabled={locked}
@@ -454,7 +454,7 @@ export default function Matches() {
                 disabled={locked || saving[matchKey]}
                 onClick={() => handleSave(matchKey)}
                 className={`rounded-xl px-3 py-2 text-xs font-medium text-white transition-colors duration-300 sm:px-4 sm:text-sm ${
-                  saved[matchKey] ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-emerald-600'
+                  saved[matchKey] ? 'bg-emerald-600' : 'bg-primary-500 hover:bg-emerald-600'
                 } disabled:cursor-not-allowed disabled:opacity-80`}
               >
                 {saved[matchKey] ? 'Guardado' : saving[matchKey] ? 'Guardando...' : 'Guardar'}
@@ -491,7 +491,7 @@ export default function Matches() {
   }
 
   const emptyState = (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-10 text-center text-sm text-slate-500 shadow-sm">
+    <div className="rounded-2xl border border-dashed border-primary-300 bg-white px-4 py-10 text-center text-sm text-primary-500 shadow-sm">
       No hay partidos para los filtros seleccionados.
     </div>
   )
@@ -499,19 +499,19 @@ export default function Matches() {
   return (
     <section className="mx-auto w-full max-w-4xl space-y-4">
       <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Calendario</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Partidos</h1>
-        <p className="text-sm text-slate-500">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-200 sm:text-sm sm:tracking-[0.24em]">Calendario</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Partidos</h1>
+        <p className="text-sm text-primary-200">Filtrá por grupo o fecha y cargá tu resultado exacto.</p>
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:gap-4 sm:p-4">
+      <div className="grid gap-3 rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:grid-cols-2 sm:gap-4 sm:p-4">
         <div className="grid gap-1.5 sm:gap-2">
-          <label htmlFor="group-filter" className="text-xs font-medium text-slate-700 sm:text-sm">Grupo</label>
+          <label htmlFor="group-filter" className="text-xs font-medium text-primary-700 sm:text-sm">Grupo</label>
           <select
             id="group-filter"
             value={selectedGroup}
             onChange={e => setSelectedGroup(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 sm:text-sm"
+            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-sm"
           >
             <option value="">Todos los grupos</option>
             {groupOptions.map(group => (
@@ -521,12 +521,12 @@ export default function Matches() {
         </div>
 
         <div className="grid gap-1.5 sm:gap-2">
-          <label htmlFor="date-filter" className="text-xs font-medium text-slate-700 sm:text-sm">Fecha</label>
+          <label htmlFor="date-filter" className="text-xs font-medium text-primary-700 sm:text-sm">Fecha</label>
           <select
             id="date-filter"
             value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100 sm:text-sm"
+            className="rounded-xl border border-primary-200 bg-white px-3 py-2.5 text-xs text-primary-900 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-100 sm:text-sm"
           >
             <option value="">Todas las fechas</option>
             {dateOptions.map(dateKey => (
@@ -546,13 +546,13 @@ export default function Matches() {
         groupedMatches.length > 0 ? (
           groupedMatches.map(dateSection => (
             <div key={dateSection.dateKey} className="space-y-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-200">
                 {formatDateLabel(dateSection.dateKey)}
               </div>
               <div className="grid gap-4">
                 {dateSection.groups.map(groupSection => (
                   <div key={`${dateSection.dateKey}-${groupSection.groupKey}`} className="grid gap-3">
-                    <div className="text-sm font-semibold text-slate-900">{groupSection.groupKey}</div>
+                    <div className="text-sm font-semibold text-white">{groupSection.groupKey}</div>
                     {groupSection.items.map(renderMatchCard)}
                   </div>
                 ))}

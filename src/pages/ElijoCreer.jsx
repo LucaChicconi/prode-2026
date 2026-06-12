@@ -133,9 +133,9 @@ export default function ElijoCreer() {
   }, [selectedPhase, selectedTeam])
 
   const confirmationMessage = 'Bien. Ya anoté tu decisión. Ahora hasta el final'
-  const panelClass = 'rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4'
+  const panelClass = 'rounded-2xl border border-primary-200 bg-white p-3 shadow-sm sm:p-4'
   const chipBaseClass = 'max-w-full rounded-full border px-3 py-2 text-xs font-medium transition sm:text-sm'
-  const chipInactiveClass = 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+  const chipInactiveClass = 'border-primary-200 bg-white text-primary-700 hover:border-primary-300 hover:bg-primary-50'
   const chipDisabledClass = 'cursor-not-allowed opacity-60'
 
   function handleSaveSelection() {
@@ -167,10 +167,10 @@ export default function ElijoCreer() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-4">
-      <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4 shadow-sm sm:p-8">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Apuesta única</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Elijo creer</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+      <div className="rounded-3xl border border-primary-200 bg-gradient-to-br from-white to-primary-50 p-4 shadow-sm sm:p-8">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-sm sm:tracking-[0.24em]">Apuesta única</p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-primary-950 sm:text-3xl">Elijo creer</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-primary-500">
           Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
           Tu predicción queda guardada de forma permanente. UNA VEZ EMPIEZA EL MUNDIAL NO PODES ARRUGAR.
         </p>
@@ -178,17 +178,17 @@ export default function ElijoCreer() {
 
       {isLoaded && isLocked && (
         <div className={panelClass}>
-          <div className="mb-2 text-sm font-semibold text-slate-900">
+          <div className="mb-2 text-sm font-semibold text-primary-900">
             Tu elección quedó guardada
           </div>
-          <p className="text-sm leading-6 text-slate-500">
+          <p className="text-sm leading-6 text-primary-500">
             {confirmationMessage}
           </p>
         </div>
       )}
 
       <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-slate-900">
+        <div className="text-sm font-semibold text-primary-900">
           Elegí tu equipo
         </div>
         <div className="flex flex-wrap gap-2">
@@ -201,7 +201,7 @@ export default function ElijoCreer() {
                 type="button"
                 disabled={isLocked}
                 onClick={() => setSelectedTeam(team)}
-                className={`${chipBaseClass} break-words ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
+                className={`${chipBaseClass} break-words ${isSelected ? 'border-primary-500 bg-primary-500 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
               >
                 {team}
               </button>
@@ -211,7 +211,7 @@ export default function ElijoCreer() {
       </div>
 
       <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-slate-900">
+        <div className="text-sm font-semibold text-primary-900">
           Seleccioná la fase máxima
         </div>
         <div className="flex flex-wrap gap-2">
@@ -224,7 +224,7 @@ export default function ElijoCreer() {
                 type="button"
                 disabled={isLocked}
                 onClick={() => setSelectedPhase(phase)}
-                className={`${chipBaseClass} ${isSelected ? 'border-slate-900 bg-slate-900 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
+                className={`${chipBaseClass} ${isSelected ? 'border-primary-500 bg-primary-500 text-white' : chipInactiveClass} ${isLocked ? chipDisabledClass : ''}`}
               >
                 {formatPhaseLabel(phase)}
               </button>
@@ -234,7 +234,7 @@ export default function ElijoCreer() {
       </div>
 
       <div className={`${panelClass} space-y-3`}>
-        <div className="text-sm font-semibold text-slate-900">
+        <div className="text-sm font-semibold text-primary-900">
           Resumen
         </div>
         {saveError && (
@@ -242,7 +242,7 @@ export default function ElijoCreer() {
             {saveError}
           </p>
         )}
-        <p className="text-sm leading-6 text-slate-500 break-words">
+        <p className="text-sm leading-6 text-primary-500 break-words">
           {selectedTeam && selectedPhase
             ? selectionSummary
             : 'Elegí un equipo y una fase para habilitar el guardado permanente.'}
@@ -251,7 +251,7 @@ export default function ElijoCreer() {
           type="button"
           disabled={!user || !selectedTeam || !selectedPhase || isLocked || isSaving}
           onClick={handleSaveSelection}
-          className="w-fit rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="w-fit rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-600 disabled:cursor-not-allowed disabled:bg-primary-300"
         >
           {isLocked ? 'Elección guardada' : isSaving ? 'Guardando...' : 'Guardar elección'}
         </button>

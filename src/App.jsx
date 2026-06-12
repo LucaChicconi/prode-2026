@@ -28,12 +28,12 @@ function Navbar() {
   const linkClassName = ({ isActive }) => [
     'rounded-full px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors sm:px-4 sm:text-sm',
     isActive
-      ? 'bg-slate-900 text-white shadow-sm'
-      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+      ? 'bg-primary-500 text-white shadow-sm'
+      : 'text-primary-600 hover:bg-primary-50 hover:text-primary-950',
   ].join(' ')
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-primary-200/80 bg-white/90 backdrop-blur">
       <nav className="mx-auto w-full max-w-6xl px-3 py-2 sm:px-4 md:hidden">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <NavLink to="/partidos" className={linkClassName}>
@@ -57,9 +57,7 @@ function Navbar() {
           )}
         </div>
 
-        <p className="mt-2 text-center text-xs font-light tracking-[0.12em] text-slate-400">
-          P R O D E M U N D I A L 2 0 2 6
-        </p>
+
       </nav>
 
       <nav className="mx-auto hidden w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 md:grid lg:px-8">
@@ -75,7 +73,7 @@ function Navbar() {
           </NavLink>
         </div>
 
-        <p className="whitespace-nowrap text-center text-lg font-light text-slate-400">
+        <p className="whitespace-nowrap text-center text-lg font-light text-primary-400">
           P R O D E M U N D I A L  2 0 2 6
         </p>
 
@@ -99,7 +97,7 @@ export default function App() {
   return (
     <AuthProvider>
       <HashRouter>
-        <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
+        <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-4 sm:px-4 sm:py-6 lg:px-8">
             <Routes>
