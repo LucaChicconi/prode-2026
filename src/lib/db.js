@@ -18,9 +18,9 @@ export async function signOut() {
 }
 
 export async function resetPasswordForEmail(email) {
-  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
+  const resetPasswordUrl = import.meta.env.VITE_RESET_PASSWORD_URL || `${window.location.origin}/#/reset-password`
   return supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: siteUrl
+    redirectTo: resetPasswordUrl
   })
 }
 
