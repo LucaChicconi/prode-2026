@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>prode-mundial</title>
+    <script>
+      (function() {
+        var search = window.location.search;
+        if (search.indexOf('access_token=') !== -1 && search.indexOf('type=recovery') !== -1) {
+          window.location.replace('/#/reset-password' + search);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
