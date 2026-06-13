@@ -9,7 +9,7 @@
       (function() {
         var hash = window.location.hash;
         if (hash.indexOf('access_token=') !== -1 && hash.indexOf('type=recovery') !== -1) {
-          window.location.replace('/#/reset-password' + hash.substring(1));
+          window.location.replace('/#/reset-password?' + hash.substring(1));
         }
       })();
     </script>
