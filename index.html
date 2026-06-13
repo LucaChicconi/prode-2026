@@ -7,9 +7,9 @@
     <title>prode-mundial</title>
     <script>
       (function() {
-        var search = window.location.search;
-        if (search.indexOf('access_token=') !== -1 && search.indexOf('type=recovery') !== -1) {
-          window.location.replace('/#/reset-password' + search);
+        var hash = window.location.hash;
+        if (hash.indexOf('access_token=') !== -1 && hash.indexOf('type=recovery') !== -1) {
+          window.location.replace('/#/reset-password' + hash.substring(1));
         }
       })();
     </script>
