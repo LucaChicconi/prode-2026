@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
 import ElijoCreer from './pages/ElijoCreer'
+import Eliminatorias from './pages/Eliminatorias'
 import Profile from './pages/Profile'
 import ResetPassword from './pages/ResetPassword'
 import Footer from './components/Footer'
@@ -61,6 +62,9 @@ function Navbar() {
           <NavLink to="/elijo-creer" className={linkClassName}>
             🔥 Elijo creer
           </NavLink>
+          <NavLink to="/eliminatorias" className={linkClassName}>
+            🏟 Eliminatorias
+          </NavLink>
         </div>
       </nav>
 
@@ -74,6 +78,9 @@ function Navbar() {
           </NavLink>
           <NavLink to="/elijo-creer" className={linkClassName}>
             🔥 Elijo creer
+          </NavLink>
+          <NavLink to="/eliminatorias" className={linkClassName}>
+            🏟 Eliminatorias
           </NavLink>
           {!user ? (
             <NavLink to="/login" className={linkClassName({ isActive: false })}>
@@ -107,6 +114,7 @@ export default function App() {
               <Route path="/partidos" element={<PrivateRoute><Matches /></PrivateRoute>} />
               <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
               <Route path="/elijo-creer" element={<PrivateRoute><ElijoCreer /></PrivateRoute>} />
+              <Route path="/eliminatorias" element={<PrivateRoute><Eliminatorias /></PrivateRoute>} />
               <Route path="/perfil" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="*" element={<Navigate to="/partidos" />} />
             </Routes>

@@ -59,7 +59,7 @@ as $$
     group by user_id
   )
   update public.profiles pr
-  set total_points = coalesce(totals.total_points, 0) + coalesce(pr.elijo_creer_bonus, 0)
+  set total_points = coalesce(totals.total_points, 0) + coalesce(pr.elijo_creer_bonus, 0) + coalesce(pr.knockout_points, 0)
   from (
     select pr_all.id as user_id, totals.total_points
     from public.profiles pr_all
