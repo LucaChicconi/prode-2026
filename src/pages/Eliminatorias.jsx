@@ -548,9 +548,9 @@ export default function Eliminatorias() {
   return (
     <section className="mx-auto w-full max-w-4xl space-y-4">
       <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Eliminatorias</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Cruces Eliminatorios</h1>
-        <p className="text-sm text-slate-500">Predicciones para la fase eliminatoria del mundial.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.24em]">Eliminatorias</p>
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Cruces Eliminatorios</h1>
+        <p className="text-sm text-white-500">Predicciones para la fase eliminatoria del mundial.</p>
       </div>
 
       <div className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:gap-4 sm:p-4">
