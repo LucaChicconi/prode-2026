@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import { getHoyLaVieron, getRanking } from '../lib/db'
+import { getRanking } from '../lib/db'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Ranking() {
   const { user } = useAuth()
   const [ranking, setRanking] = useState([])
-  const [batacazoUsers, setBatacazoUsers] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -14,17 +13,11 @@ export default function Ranking() {
     async function loadRanking() {
       setLoading(true)
 
-      const [rankingResult, hoyLaVieronResult] = await Promise.all([
-        getRanking(),
-        getHoyLaVieron(),
-      ])
+      const rankingResult = await getRanking()
 
       if (!active) return
 
-      const rankingData = rankingResult.data || []
-
-      setRanking(rankingData)
-      setBatacazoUsers((hoyLaVieronResult.data || []).map(row => row.username))
+      setRanking(rankingResult.data || [])
       setLoading(false)
     }
 
@@ -37,7 +30,6 @@ export default function Ranking() {
 
   const medals = ['🥇', '🥈', '🥉']
   const panelClass = 'rounded-2xl border border-primary-200 bg-white p-2 shadow-sm sm:p-3'
-  const pillClass = 'rounded-full border border-primary-200 bg-primary-50 px-3 py-2 text-sm font-medium text-primary-700 sm:text-base'
 
   return (
     <section className="mx-auto w-full max-w-3xl space-y-2">
@@ -61,11 +53,6 @@ export default function Ranking() {
           </span>
           <span className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary-900 sm:gap-2 sm:text-base">
             <span>{profile.total_points} pts</span>
-            {batacazoUsers.includes(profile.username) ? (
-              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-sm font-medium text-amber-700">
-                Batacazo!
-              </span>
-            ) : null}
           </span>
         </div>
       ))}
@@ -75,28 +62,16 @@ export default function Ranking() {
       )}
 
       <div className={panelClass}>
-        <div className="mb-2 text-base font-semibold text-primary-900">Posible batacazo</div>
-        <p className="text-base leading-6 text-primary-500 break-words">
-          Si uno de los 15 equipos de ranking FIFA más bajo le empata o le gana a uno del top 10,
-          ese partido queda marcado como posible batacazo. Si lo acertás exacto,
-          sumás 5 puntos extra y entrás en &quot;Hoy la vieron&quot;.
+        <div className="mb-2 text-base font-semibold text-primary-900">¿Cómo se suman puntos?</div>
+        <p className="text-base leading-6 text-primary-500">
+          + 3 puntos por acertar el equipo ganador.<br />
+          + 6 por acertar los goles (sin contar penales).<br />
+          + 10 si acertás los penales.
+
+          <p>No se acumulan, o sumás 3 o sumás 6 o sumás 10 por partido.</p>
         </p>
       </div>
 
-      <div className={panelClass}>
-        <div className="mb-3 text-base font-semibold text-primary-900">Hoy la vieron</div>
-        {batacazoUsers.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {batacazoUsers.map(username => (
-              <span key={username} className={pillClass}>
-                {username}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="text-base text-primary-500">Todavía nadie acertó un batacazo.</p>
-        )}
-      </div>
     </section>
   )
 }
