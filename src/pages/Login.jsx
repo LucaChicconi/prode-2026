@@ -33,7 +33,7 @@ export default function Login() {
     if (isRegister) {
       setSuccess('Revisá tu email para confirmar la cuenta. Fijate en spam!')
     } else {
-      navigate('/partidos')
+      navigate('/eliminatorias')
     }
   }
 

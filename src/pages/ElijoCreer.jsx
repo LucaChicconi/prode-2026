@@ -4,24 +4,14 @@ import { getElijoCreerSelection, saveElijoCreerSelection } from '../lib/db'
 
 const underdogTeams = [
   'Nueva Zelanda',
-  'Haiti',
-  'Curazao',
   'Ghana',
   'Cabo Verde',
   'Bosnia y Herzegovina',
-  'Jordania',
-  'Arabia Saudita',
   'Sudafrica',
-  'Irak',
-  'Qatar',
-  'Uzbekistan',
   'RD Congo',
-  'Tunez',
-  'Escocia',
 ]
 
 const advancementPhases = [
-  'Fase de grupos',
   'Dieciseisavos de final',
   'Octavos',
   'Cuartos',
@@ -101,10 +91,6 @@ export default function ElijoCreer() {
   const selectionSummary = useMemo(() => {
     if (!selectedTeam || !selectedPhase) return ''
 
-    if (selectedPhase === 'Fase de grupos') {
-      return `Si pensas que ${selectedTeam} no pasa de fase de grupos, por qué no elegís otro equipo? xd`
-    }
-
     if (selectedPhase === 'Dieciseisavos de final') {
       return `Vas con ${selectedTeam}, bancás pero veo un poco de tibieza acá`
     }
@@ -171,8 +157,8 @@ export default function ElijoCreer() {
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-500 sm:text-base sm:tracking-[0.24em]">Apuesta única</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight text-primary-950 sm:text-4xl">Elijo creer</h1>
         <p className="mt-2 max-w-2xl text-base leading-6 text-primary-500">
-          Elegí un solo equipo de los 15 más bajos del ranking FIFA y elegí hasta qué fase creés que va a llegar.
-          Tu predicción queda guardada de forma permanente.Tenés tiempo hasta el 17 para elegir. <strong>UNA VEZ GUARDES TU ELECCIÓN NO PODES ARRUGAR.</strong>
+          Elegí un equipo de los underdogs que pensás que va a hacer historia.
+          Tu predicción queda guardada de forma permanente. <strong>UNA VEZ GUARDES TU ELECCIÓN NO PODES ARRUGAR.</strong>
         </p>
       </div>
 
