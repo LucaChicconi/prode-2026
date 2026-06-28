@@ -2,7 +2,6 @@ import { HashRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import Login from './pages/Login'
-import Matches from './pages/Matches'
 import Ranking from './pages/Ranking'
 import ElijoCreer from './pages/ElijoCreer'
 import Eliminatorias from './pages/Eliminatorias'
@@ -53,9 +52,6 @@ function Navbar() {
           <img src={logo} alt="Logo" className="h-8 w-auto" />
         </div>
         <div className="flex items-center justify-center gap-1 sm:gap-1.5">
-          <NavLink to="/partidos" className={linkClassName}>
-            ⚽ Partidos
-          </NavLink>
           <NavLink to="/ranking" className={linkClassName}>
             🏆 Ranking
           </NavLink>
@@ -70,9 +66,6 @@ function Navbar() {
 
       <nav className="mx-auto hidden w-full max-w-4xl items-center gap-2 px-4 py-1.5 md:flex lg:px-8">
         <div className="flex items-center gap-1.5 lg:gap-2">
-          <NavLink to="/partidos" className={linkClassName}>
-            ⚽ Partidos
-          </NavLink>
           <NavLink to="/ranking" className={linkClassName}>
             🏆 Ranking
           </NavLink>
@@ -111,12 +104,11 @@ export default function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/partidos" element={<PrivateRoute><Matches /></PrivateRoute>} />
               <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />
               <Route path="/elijo-creer" element={<PrivateRoute><ElijoCreer /></PrivateRoute>} />
               <Route path="/eliminatorias" element={<PrivateRoute><Eliminatorias /></PrivateRoute>} />
               <Route path="/perfil" element={<PrivateRoute><Profile /></PrivateRoute>} />
-              <Route path="*" element={<Navigate to="/partidos" />} />
+              <Route path="*" element={<Navigate to="/eliminatorias" />} />
             </Routes>
           </main>
           <Footer />
