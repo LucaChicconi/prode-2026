@@ -92,6 +92,7 @@ const stageColors = {
   'Octavos': '#3B82F6',
   'Cuartos': '#8B5CF6',
   'Semifinal': '#F59E0B',
+  'Tercer puesto': '#10B981',
   'Final': '#EF4444',
 }
 
@@ -298,7 +299,7 @@ export default function Eliminatorias() {
   const stageOptions = useMemo(() => {
     const stages = Array.from(new Set(matches.map(m => m.stage)))
     return stages.sort((a, b) => {
-      const order = ['16avos', 'Octavos', 'Cuartos', 'Semifinal', 'Final']
+      const order = ['16avos', 'Octavos', 'Cuartos', 'Semifinal', 'Tercer puesto', 'Final']
       return order.indexOf(a) - order.indexOf(b)
     })
   }, [matches])
@@ -319,7 +320,7 @@ export default function Eliminatorias() {
     return Object.entries(byStage)
       .map(([stage, items]) => ({ stage, items }))
       .sort((a, b) => {
-        const order = ['16avos', 'Octavos', 'Cuartos', 'Semifinal', 'Final']
+        const order = ['16avos', 'Octavos', 'Cuartos', 'Semifinal', 'Tercer puesto', 'Final']
         return order.indexOf(a.stage) - order.indexOf(b.stage)
       })
   }, [filteredMatches])
