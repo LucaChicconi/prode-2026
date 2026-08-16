@@ -85,10 +85,6 @@ function Navbar() {
             </NavLink>
           )}
         </div>
-
-        <div id="logo" className="ml-auto shrink-0">
-          <img src={logo} alt="Logo" className="h-10 w-auto" />
-        </div>
       </nav>
     </header>
   )
